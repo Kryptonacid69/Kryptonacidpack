@@ -341,13 +341,14 @@ SMODS.Joker {
 
 SMODS.ObjectType({
     key = "Krypton_Green",
-    default = "j_joker", -- this is what it should give when you have all of them and showman
+    default = "j_green_joker", -- this is what it should give when you have all of them and showman
     cards = {
         ["j_green_joker"] = true,
         ["j_Krypton_UncommonJoker"] = true,
         ["j_Krypton_GreenestJoker"] = true,
 		["j_Krypton_GreenSquare"] = true,
-		["s_Krypton_GreenSticker"] = true,
+		["j_Krypton_GreenJokerSoul"] = true,
+		["e_Krypton_Green"] = true,
     },
 })
 
@@ -754,7 +755,7 @@ SMODS.Joker {
 		if context.joker_main then
 			return { mult = card.ability.extra.mult}
 		end
-		if pseudorandom('WEARESOBACK!ITSSOOVER!') < G.GAME.probabilities.normal / card.ability.extra.odds then
+		if pseudorandom('WEARESOBACK!ITSSOOVER!') <= G.GAME.probabilities.normal / card.ability.extra.odds then
 			if context.setting_blind and context.main_eval then
 				card.ability.extra.mult = (card.ability.extra.mult * 2)
 				return {
@@ -762,16 +763,15 @@ SMODS.Joker {
 					colour = G.C.MULT,
 				}
 			end
-		end
-		if pseudorandom('WEARESOBACK!ITSSOOVER!') >= G.GAME.probabilities.normal / card.ability.extra.odds then
-			if context.setting_blind and context.main_eval then
+		else
+			if context.setting_blind and context.main_eval then	
 				card.ability.extra.mult = (card.ability.extra.mult/2)
 				return {
 					message = 'Aw Dangit.',
 					colour = G.C.MULT,
 				}
-			end
-		end		
+			end	
+        end			
 	end	
 }
 
@@ -803,12 +803,14 @@ SMODS.Joker{
 			card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.MultMod
 			return {
 				message = 'Upgrade!',
+				color = G.C.MULT,
 			}
 		end
 		if context.joker_main and (context.scoring_name == 'Pair') then
 			return {
-                message = 'Evoked!',
-			    colour = G.C.MULT
+				mult_mod = card.ability.extra.mult,
+				message = 'Evoked!',
+				color = G.C.MULT,
 			}
 		end
 		if context.final_scoring_step and (context.scoring_name == 'Pair') then
@@ -816,7 +818,7 @@ SMODS.Joker{
 		end
 	end,
 }
---[[
+
 SMODS.Joker {
   key = 'GreenJokerSoul',
   config = { extra = { rounds = 0, roundtotal = 2 } },
@@ -824,7 +826,7 @@ SMODS.Joker {
 	  name = "Green Joker's Soul",
 	  text = {
 		  "Sell this joker after {C:attention}#2#{} rounds to apply",
-		  "a {C:green}Green Sticker{} to a random joker",
+		  "{C:green}Green Edition{} to a random joker",
 		  "{C:inactive}(Currently {}{C:attention}#1#{}{C:inactive}/#2#){}",
       }
   },
@@ -837,15 +839,47 @@ SMODS.Joker {
 		return { vars = { card.ability.extra.rounds, card.ability.extra.roundtotal} }
 	end,
 	calculate = function(self, card, context)	
-		if context.end_of_round then
+		if context.end_of_round and context.main_eval and card.ability.extra.rounds == 0 then
 			card.ability.extra.rounds = card.ability.extra.rounds + 1
+			return {
+				message = '1/2',
+			}
 		end
-		if context.selling_self and card.ability.extra.rounds > card.ability.extra.roundtotal then
-			
+		if context.end_of_round and context.main_eval and card.ability.extra.rounds == 1 then
+			card.ability.extra.rounds = card.ability.extra.rounds + 1
+			return {
+				message = 'Active!',
+			}
+		end
+		if context.end_of_round and context.main_eval and card.ability.extra.rounds >= card.ability.extra.roundtotal then
+			card.ability.extra.rounds = card.ability.extra.rounds + 1
+			return {
+				message = 'Active!',
+			}
+		end
+		if context.selling_self and card.ability.extra.rounds >= card.ability.extra.roundtotal then
+			local GreenList = {}
+			for k, v in pairs(G.jokers.cards) do
+				if v.ability.set == "Joker" and not v.edition and v ~= card then
+					table.insert(GreenList, v)
+				end
+			end
+			if #GreenList > 0 then
+				local GreenListWinner =
+					pseudorandom_element(GreenList, pseudoseed("Greenify~"))
+				GreenListWinner:set_edition('e_Krypton_Green')
+				if not context.retrigger_joker then
+					card:juice_up(0.5, 0.5)
+				end
+			end
+			return {
+				message = 'Green!',
+				color = G.C.GREEN,
+			}
 		end
 	end	
 }
---]]
+
 
 ------------------------------------------------------------------------------------------------------------------
 

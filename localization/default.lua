@@ -14,6 +14,7 @@ return {
                             text = {
                                 "{C:green}Green joker{}, {C:green}Greener Joker{}", 
 								"{C:green}Greenest Joker{}, {C:green}Green Square{}",
+								"{C:green}Green Joker's Soul{}",
                             },
             },
            
