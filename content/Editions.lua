@@ -26,8 +26,9 @@ SMODS.Edition {
 	},
 	shader = 'Green',
 	extra_cost = 4,
+	pools = { ["Green"] = true },
 	in_shop = true,
-	weight = 3,
+	weight = 1, 
 	badge_colour = G.C.GREEN,
 	calculate = function(self, card, context)
 		if card.ability.set == 'Joker' then	

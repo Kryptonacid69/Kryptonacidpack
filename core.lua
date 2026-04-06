@@ -14,6 +14,7 @@ end
 SMODS.current_mod.optional_features = {
 	retrigger_joker = true,
 	post_trigger = true,
+	object_weights = true,
 }
 
 local global = {}
