@@ -10,7 +10,7 @@
 	"badge_text_colour": "FFA500",
 	"version": "1.0.0",
 	"dependencies": [
-		"Steamodded (>=1.0.0~BETA-0404a)",
+		"Steamodded (>=1.0.0~BETA-1531zeebee)",
 		"Talisman"
 	],
 }
