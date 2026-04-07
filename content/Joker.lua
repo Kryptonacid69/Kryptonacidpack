@@ -348,7 +348,7 @@ SMODS.ObjectType({
         ["j_Krypton_GreenestJoker"] = true,
 		["j_Krypton_GreenSquare"] = true,
 		["j_Krypton_GreenJokerSoul"] = true,
-		["j_Krypton_Ryu_Ishigori"] = true,
+		["e_Krypton_Green"] = true,
     },
 })
 
@@ -408,7 +408,7 @@ SMODS.ObjectType({
 		["j_bull"] = true, -- dies to matador, matador solos
 		["j_Krypton_IhateArchieKysDieDieDie"] = true,
 		["j_Krypton_LoganPaulJoker"] = true,
-		["j_Krypton_Ryu_Ishigori"] = true,		
+		
     },
 })
 
@@ -887,7 +887,7 @@ SMODS.ObjectType({
 		["j_Krypton_Ryu_Ishigori"] = true,		
     },
 })
---[[ fits any category, increase weight based on amount after 2 obtained becomes a cosumable in tarot pack
+
 SMODS.Joker {
 	key = 'Ryu_Ishigori',
 	loc_txt = {
@@ -895,46 +895,33 @@ SMODS.Joker {
 		text = {
 			"{C:attention}Larps as any category of Joker{}",
 			"Obtaining This Joker allows more copies",
-			"To appear in the shop",
+			"To appear in the shop, {C:attention}+#1#{} Joker slot",
 			"{C:inactive,s:0.8}Let's Larp{}",
 		}
 	},
-	config = { extra = { Odds = 0 } },
+	config = { extra = { SlotChange = 1 } },
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.mult, card.ability.extra.weight } }
+		return { vars = { card.ability.extra.SlotChange, card.ability.extra.weight } }
 	end,
-	rarity = 1,
+	rarity = 2,
 	atlas = 'Modtest',
 	pos = { x = 7, y = 1 },
 	cost = 4,
 	weight = 10,	
+	in_pool = function(self, args) return true, {allow_duplicates = true} end,
 	get_weight = function(self, weight)
-		return weight*(2^#SMODS.find_card(self.key))
+		return weight*(1.15^#SMODS.find_card(self.key))
     end,
-	calculate = function(self, card, context)
-        if context.reroll_shop then
-		    G.shop:recalculate()
-			JaneCount = 0
-			for i = 1, #G.jokers.cards do
-				if G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Krypton_JaneJuliet then
-					JaneCount = JaneCount + 1
-				end
-			end
-			JaneCountScalar = (2^JaneCount)
-			if JaneCountScalar > 15 then
-				JaneCountScalar = 15
-			end
-			for i = 1, 1 do
-				if math.random(0, 100) > JaneCountScalar then
-					if G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Krypton_JaneJuliet then
-					G.shop_jokers.cards[i].config.center.pools.Krypton_JaneJuliet:set_edition({negative = true}, true)
-				end
-			end
-		end
-	end
+	add_to_deck = function (self, card, from_debuff)
+		G.jokers:change_size(1*(card.ability.extra.SlotChange))
+	end,
+	remove_from_deck = function (self, card, from_debuff)
+		G.jokers:change_size(-1*(card.ability.extra.SlotChange))
+	end,
 }
---]]
-----------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------
 
 local upd = Game.update
 function Game:update(dt)
