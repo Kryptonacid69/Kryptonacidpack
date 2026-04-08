@@ -154,13 +154,14 @@ SMODS.Joker {
   key = 'Obese_Joker',
   rarity = 3,
   pos = { x = 0, y = 0 },
-  config = { extra = { Xmult = 1.75, odds = 2 } },
+  config = { extra = { Xmult = 1.05, Scalar = 0.02, odds = 2 } },
   loc_txt = {
       name = 'Obese Joker',
 	  text = {
-		  "All cards score {X:mult,C:white} X#1#{} But",
-          "{C:green} #2# in #3# {}Chance Cards Scored",
-		  "Are {C:attention}Eaten{}"
+		  "All cards score {X:mult,C:white}X#1#{}, But",
+          "{C:green} #2# in #3# {}chance Cards Scored",
+		  "Are {C:attention}Eaten{}, And Gains",
+		  "{X:mult,C:white}X#4#{} Per Card {C:attention}Eaten{}"
     }
   },
   atlas = 'Modtest',
@@ -172,7 +173,7 @@ SMODS.Joker {
   perishable_compat = true,
 
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.Xmult, (G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+		return { vars = { card.ability.extra.Xmult, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.Scalar } }
 	end,
 	calculate = function(self, card, context)
 		if context.individual and context.cardarea == G.play then
@@ -186,6 +187,7 @@ SMODS.Joker {
 		  
 		  for _, v in ipairs(G.play.cards) do
             destroyed_cards[#destroyed_cards + 1] = v
+			card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Scalar
           end
 		  
 	      if pseudorandom('Obese_Joker') < G.GAME.probabilities.normal / card.ability.extra.odds then
@@ -504,7 +506,7 @@ SMODS.Joker {
         end
     end
 }
-  --MICHEAL CAT IDEA !!!common cat: gives 15 mult, 1/10, uncommon cat: gives x1.5 mult, retrigger first card once, 1/40, rare cat: gives x4 mult, retrigger all cards played, 1/100, legendary cat: gives ^1.5, retrigger all cards played and in hand
+
 SMODS.Joker {
   key = 'MichaelCatV1',
   config = { extra = { mult = 10, odds = 5 } },
@@ -525,7 +527,7 @@ SMODS.Joker {
 		return { vars = { card.ability.extra.mult, (G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
 	end,
 	calculate = function(self, card, context)
-		if context.joker_main then
+		if context.joker_main and not context.blueprint then
 		    if pseudorandom('MichaelCatV1') < G.GAME.probabilities.normal / card.ability.extra.odds then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
@@ -579,7 +581,7 @@ SMODS.Joker {
 				}
 			end
 		end
-		if context.joker_main then
+		if context.joker_main and not context.blueprint then
 		    if pseudorandom('MichaelCatV2') < G.GAME.probabilities.normal / card.ability.extra.odds then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
@@ -603,7 +605,7 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'MichaelCatV3',
-  config = { extra = { Xmult = 2.5, odds = 20, repetitions = 1 } },
+  config = { extra = { Xmult = 2.5, odds = 50, repetitions = 1 } },
   loc_txt = {
 	  name = 'Shelby - Punching',
 	  text = {
@@ -631,7 +633,7 @@ SMODS.Joker {
 				card = card,
 			}
 		end
-		if context.joker_main then
+		if context.joker_main and not context.blueprint then
 		    if pseudorandom('MichaelCatV3') < G.GAME.probabilities.normal / card.ability.extra.odds then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
@@ -792,7 +794,7 @@ SMODS.Joker{
   eternal_compat = true,
   perishable_compat = false,
   pos = { x = 5, y = 1 },
-  config = { extra = { MultMod = 6, mult = 0 } },
+  config = { extra = { MultMod = 10, mult = 0 } },
 	
 	loc_vars = function(self,info_queue,card)
 		return {vars = {card.ability.extra.mult, card.ability.extra.MultMod}}
@@ -836,6 +838,7 @@ SMODS.Joker {
   cost = 6,
    
 	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue+1] = G.P_CENTERS.e_Krypton_Green
 		return { vars = { card.ability.extra.rounds, card.ability.extra.roundtotal} }
 	end,
 	calculate = function(self, card, context)	
@@ -901,7 +904,7 @@ SMODS.Joker {
 	},
 	config = { extra = { SlotChange = 1 } },
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.SlotChange, card.ability.extra.weight } }
+		return { vars = { card.ability.extra.SlotChange } }
 	end,
 	rarity = 2,
 	atlas = 'Modtest',
@@ -920,7 +923,112 @@ SMODS.Joker {
 	end,
 }
 
+SMODS.ObjectType({
+    key = "Krypton_Cat",
+    default = "j_lucky_cat", -- this is what it should give when you have all of them and showman
+    cards = {
+        ["j_lucky_cat"] = true,
+        ["j_Krypton_LiamCat"] = true,
+        ["j_Krypton_MichaelCatV1"] = true,
+		["j_Krypton_MichaelCatV2"] = true,
+		["j_Krypton_MichaelCatV3"] = true,
+		["j_Krypton_MichaelCatV4"] = true,
+		["j_Krypton_Possum"] = true,
+		["j_Krypton_MyCutiePatootie"] = true,
+		["j_Krypton_Ryu_Ishigori"] = true,
+    },
+})
 
+SMODS.Joker {
+	key = 'MyCutiePatootie',
+	loc_txt = {
+		name = 'Finley',
+		text = {
+			"{X:purple,C:white} ^#1# {} Mult, Increases by {X:purple,C:white} ^#2# {}",
+			" For each {C:attention}Cat Joker{} owned",
+			"{C:inactive}(Currently {X:purple,C:white}^#3#{C:inactive} Mult)",
+			"{C:inactive,s:0.8}My Cutie Patootie{}"
+		}
+	},
+	config = { extra = { emult = 1.1, emult_mod = 0.2, emulttotal = 1.1 } },
+	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = {key = 'Krypton_CatGroupText', set = 'Other'}
+		return { vars = { card.ability.extra.emult, card.ability.extra.emult_mod, card.ability.extra.emulttotal, } }
+	end,
+	rarity = 4,
+	atlas = 'Modtest',
+	pos = { x = 8, y = 1 },
+	cost = 20,
+	calculate = function(self, card, context)
+    CatCount = 0
+    for i = 1, #G.jokers.cards do
+        if G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Krypton_Cat then
+            CatCount = CatCount + 1
+        end
+    end
+	card.ability.extra.emulttotal = (CatCount * card.ability.extra.emult_mod) + card.ability.extra.emult
+	if context.joker_main then
+        return {
+            emult = card.ability.extra.emulttotal
+        }
+		end
+	end
+}
+-- IF YOU WANNA INCREASE WEIGHT OF JOKER IN ANOTHER, USE 
+--if context.modify_weights then
+--   return {key = 'j_modprefix_key', weight = number}
+--end
+SMODS.Joker {
+  key = 'Possum',
+  config = { extra = { Xmult = 2, dollars = 5, odds = 10 } },
+  loc_txt = {
+	  name = 'Possum',
+	  text = {
+		  "Gives {X:mult,C:white}X#1#{} Mult",
+		  "Gain {C:money}$#4#{} at {C:attention}Round End{}",
+		  "{C:green}#2# in #3#{} Chance to {C:attention}Destroy",
+		  "Itself at end of {C:attention}Blind{}"
+      }
+  },
+  rarity = 2,
+  pos = { x = 9, y = 1 },
+  atlas = 'Modtest',
+  cost = 5,
+  eternal_compat = false,
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card.ability.extra.Xmult, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.dollars } }
+	end,
+	calculate = function(self, card, context)
+		if context.end_of_round and context.main_eval and not context.blueprint then
+		    if pseudorandom('Possum') < G.GAME.probabilities.normal / card.ability.extra.odds then
+				G.E_MANAGER:add_event(Event({
+					trigger = 'after',
+					delay = 0.4,
+					func = function()                           
+						play_sound('timpani')                           
+						card:juice_up(0.3, 0.5)
+						SMODS.destroy_cards(card)
+						return true
+					end	
+				}))	
+			end	
+		end
+		if context.joker_main then
+			return {
+				Xmult_mod = card.ability.extra.Xmult,
+				message = localize { type = 'variable',  key = 'a_xmult', vars = { card.ability.extra.Xmult } },
+			}   
+		end
+		if context.end_of_round and context.main_eval then
+			return {
+				dollars = card.ability.extra.dollars
+			}	
+		end
+	end
+}
+
+-- AND HIGHER TEIR SHELBYS PREVENT LOWER FROM SPAWNING
+-- TODO: MAKE FINLEY GIVE 2X CAT ODDS AND COME UP WITH CONCEPT FOR BLADETRAIL AFTERIMAGE JOKER + EDITION OR STICKER(?)
 ------------------------------------------------------------------------------------------------------------------
 
 local upd = Game.update

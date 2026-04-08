@@ -17,6 +17,14 @@ return {
 								"{C:green}Green Joker's Soul{}",
                             },
             },
+            Krypton_CatGroupText = {
+                            name = "Cat Jokers:",
+                            text = {
+                                "{s:0.8}Lucky Cat, Jungle, Shelby,{}", 
+								"{s:0.8}Shelby - Drinking, Shelby - Punching,{}",
+								"{s:0.8}Shelby - Loaf, Finley, Possum{}",
+                            },
+            },
            
     },
 }
