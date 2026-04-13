@@ -8,7 +8,33 @@
 ----------- MOD CODE -------------------------------------
 local mod = SMODS.current_mod
 SMODS.Atlas({key = "modicon", path = "modicon.png", px = 33, py = 34, atlas_table = "ASSET_ATLAS"}):register()
-	
+		
+SMODS.ObjectType({
+    key = "Krypton_KryptonJoker",
+    default = "j_Krypton_UncommonJoker", 
+    cards = {
+		["j_Krypton_UncommonJoker"] = true,
+		["j_Krypton_GreenestJoker"] = true,
+		["j_Krypton_BluerJoker"] = true,
+		["j_Krypton_UncommonJoker"] = true,
+		["j_Krypton_92pxjoker"] = true,
+	    ["j_Krypton_Obese_Joker"] = true,
+		["j_Krypton_JimboExe"] = true,
+		["j_Krypton_LiamCat"] = true,
+		["j_Krypton_SCREWSCREWSCREW"] = true,
+		["j_Krypton_LoganPaulJoker"] = true,
+		["j_Krypton_bettingonanout"] = true,
+		["j_Krypton_MichaelCatV1"] = true,
+		["j_Krypton_IhateArchieKysDieDieDie"] = true,
+		["j_Krypton_WEARESOBACK!ITSSOOVER!"] = true,
+		["j_Krypton_Darkness"] = true,
+		["j_Krypton_GreenJokerSoul"] = true,
+		["j_Krypton_Possum"] = true,
+		["j_Krypton_Ryu_Ishigori"] = true,
+		["j_Krypton_Ryu_Ishigori"] = true,	
+    },
+})
+
 SMODS.Atlas {
 	key = "Modtest",
 	path = "JokerSpritesheet.png",
@@ -23,7 +49,7 @@ SMODS.Joker {
 			"{C:mult}+#1#{} Mult"
 		}
 	},
-	config = { extra = { mult = 10 } },
+	config = { extra = { mult = 20 } },
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.mult } }
 	end,
@@ -68,7 +94,7 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'BluerJoker',
-  config = { extra = { a_xchips = 2.5 } },
+  config = { extra = { xchips = 2.5 } },
   loc_txt = {
 	  name = 'Bluer Joker',
 	  text = {
@@ -81,19 +107,13 @@ SMODS.Joker {
   cost = 5,
 
   loc_vars = function(self, info_queue, card)
-    local xchips
-    if G.jokers then xchips = (card.ability.extra.a_xchips) end
-    return {
-      vars = {
-        card.ability.extra.a_xchips
-      }
-    }
+    return { vars = { card.ability.extra.xchips  }  }
   end,
 
   calculate = function(self, card, context)
     if context.joker_main then
       return {
-        xchips = (card.ability.extra.a_xchips) 
+        xchips = card.ability.extra.xchips
       }
     end
   end
@@ -255,7 +275,7 @@ SMODS.Joker {
 			"{C:inactive,s:0.6}Superior race{}"
 		}
 	},
-	config = { extra = { timer = 10, Xmult = 2.5, currentquip = 0, Xquips = { 'Meow!', 'Munch Munch Munch', 'The Fog is Coming', 'I am Literally scratching your furniture' }  }, },
+	config = { extra = { timer = 10, Xmult = 3, currentquip = 0, Xquips = { 'Meow!', 'Munch Munch Munch', 'The Fog is Coming', 'I am Literally scratching your furniture' }  }, },
 	update = function(self, card, dt)
 	  card.ability.extra.timer = card.ability.extra.timer - (dt/4)
 	  if card.ability.extra.timer <= 0 then
@@ -351,6 +371,7 @@ SMODS.ObjectType({
 		["j_Krypton_GreenSquare"] = true,
 		["j_Krypton_GreenJokerSoul"] = true,
 		["e_Krypton_Green"] = true,
+		["j_Krypton_Ryu_Ishigori"] = true,
     },
 })
 
@@ -410,6 +431,7 @@ SMODS.ObjectType({
 		["j_bull"] = true, -- dies to matador, matador solos
 		["j_Krypton_IhateArchieKysDieDieDie"] = true,
 		["j_Krypton_LoganPaulJoker"] = true,
+		["j_Krypton_Ryu_Ishigori"] = true,
 		
     },
 })
@@ -516,6 +538,8 @@ SMODS.Joker {
 		  "Gives {C:mult}+#1#{} Mult",
 		  "{C:green}#2# in #3#{} Chance to upgrade",
 		  "when this {C:attention}joker triggers{}",
+		  "{C:inactive}(Cannot upgrade if higher teir{}",
+		  "{C:inactive}Shelby currently Exists.){}",
       }
   },
   rarity = 1,
@@ -527,7 +551,10 @@ SMODS.Joker {
 		return { vars = { card.ability.extra.mult, (G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
 	end,
 	calculate = function(self, card, context)
-		if context.joker_main and not context.blueprint then
+		local Catcheck1 = next(SMODS.find_card('j_Krypton_MichaelCatV2'))
+		local Catcheck2 = next(SMODS.find_card('j_Krypton_MichaelCatV3'))
+		local Catcheck3 = next(SMODS.find_card('j_Krypton_MichaelCatV4'))
+		if context.joker_main and not context.blueprint and not Catcheck1 and not Catcheck2 and not Catcheck3 then
 		    if pseudorandom('MichaelCatV1') < G.GAME.probabilities.normal / card.ability.extra.odds then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
@@ -913,7 +940,7 @@ SMODS.Joker {
 	weight = 10,	
 	in_pool = function(self, args) return true, {allow_duplicates = true} end,
 	get_weight = function(self, weight)
-		return weight*(1.15^#SMODS.find_card(self.key))
+		return weight*(1.3^#SMODS.find_card(self.key))
     end,
 	add_to_deck = function (self, card, from_debuff)
 		G.jokers:change_size(1*(card.ability.extra.SlotChange))
@@ -1027,6 +1054,37 @@ SMODS.Joker {
 	end
 }
 
+
+SMODS.Joker {
+	key = 'DihuiBlade',
+	loc_txt = {
+		name = "Dihui star's blade",
+		text = {
+			"{C:attention}Retrigger {}all {C:blue}Bladetrail Cards {}{C:attention}#1#{} time(s).",
+			"All {C:blue}Bladetrail{} Cards additionally Score",
+			"{X:chips,C:white}XChips{} Equal to their {X:mult,C:white}XMult{}",
+			"{C:inactive,s:0.7}Lacerating Afterimages from Myriad Moments{}",
+		}
+	},
+	config = { extra = { repetitions = 1 } },
+	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = G.P_CENTERS.m_Krypton_BladeTrailCard		
+		return { vars = { card.ability.extra.repetitions } }
+	end,
+	rarity = 3,
+	atlas = 'Modtest',
+	pos = { x = 10, y = 1},
+	cost = 10,
+	calculate = function(self, card, context)
+        if context.repetition and context.cardarea == G.play and SMODS.get_enhancements(context.other_card)["m_Krypton_BladeTrailCard"] == true then
+            return {
+                message = localize('k_again_ex'),
+                repetitions = 1,
+                card = card
+            }
+		end
+	end
+}
 -- AND HIGHER TEIR SHELBYS PREVENT LOWER FROM SPAWNING
 -- TODO: MAKE FINLEY GIVE 2X CAT ODDS AND COME UP WITH CONCEPT FOR BLADETRAIL AFTERIMAGE JOKER + EDITION OR STICKER(?)
 ------------------------------------------------------------------------------------------------------------------
