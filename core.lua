@@ -1,20 +1,9 @@
---- STEAMODDED HEADER
---- MOD_NAME: KryptonacidPack
---- MOD_ID: KryptonacidPack
---- MOD_AUTHOR: KryptonacidPack
---- MOD_DESCRIPTION: KryptonacidPack
---- PREFIX: KryptonacidPack
-----------------------------------------------------------
------------ MOD CODE -------------------------------------
-
 if not KryptonacidPack then
     KryptonacidPack = {}
 end
 
 SMODS.current_mod.optional_features = {
 	retrigger_joker = true,
-	post_trigger = true,
-	object_weights = true,
 }
 
 local global = {}

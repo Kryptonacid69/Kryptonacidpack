@@ -29,6 +29,9 @@ SMODS.Edition {
 	in_shop = true,
 	weight = 3,
 	badge_colour = G.C.GREEN,
+	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = {key = 'Krypton_GreenSquareloctext', set = 'Other'}
+	end,	
 	calculate = function(self, card, context)
 		if card.ability.set == 'Joker' then	
 			greencount = 0	
@@ -47,7 +50,7 @@ SMODS.Edition {
 				}
 			end
 		end
-	end
+	end,
 }
 
 local poll_edition_ref = poll_edition
@@ -72,3 +75,4 @@ function poll_edition(_key, _mod, _no_neg, _guaranteed, _options)
 
   return ret
 end
+

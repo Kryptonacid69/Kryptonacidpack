@@ -1,13 +1,9 @@
---- STEAMODDED HEADER
---- MOD_NAME: KryptonacidPack
---- MOD_ID: KryptonacidPack
---- MOD_AUTHOR: KryptonacidPack
---- MOD_DESCRIPTION: KryptonacidPack
---- PREFIX: KryptonacidPack
-----------------------------------------------------------
------------ MOD CODE -------------------------------------
-local mod = SMODS.current_mod
-SMODS.Atlas({key = "modicon", path = "modicon.png", px = 33, py = 34, atlas_table = "ASSET_ATLAS"}):register()
+SMODS.Atlas {
+  key = 'modicon',
+  px = 33,
+  py = 34,
+  path = 'modicon.png'
+}
 		
 SMODS.ObjectType({
     key = "Krypton_KryptonJoker",
@@ -178,7 +174,7 @@ SMODS.Joker {
   loc_txt = {
       name = 'Obese Joker',
 	  text = {
-		  "All cards score {X:mult,C:white}X#1#{}, But",
+		  "All cards score {X:mult,C:white}X#1#,{} But",
           "{C:green} #2# in #3# {}chance Cards Scored",
 		  "Are {C:attention}Eaten{}, And Gains",
 		  "{X:mult,C:white}X#4#{} Per Card {C:attention}Eaten{}"
@@ -254,8 +250,8 @@ SMODS.Joker {
 
     calculate = function(self, card, context)
 	if context.joker_main then
-		if SMODS.pseudorandom_probability(card, 'example_prob', card.ability.extra.numerator, card.ability.extra.denominator) then G.jumpscare2 = 230 else G.jumpscare = 230 end	
-		if SMODS.pseudorandom_probability(card, 'example_prob', card.ability.extra.numerator, card.ability.extra.denominator) then play_sound("Krypton_Lobotomy") else play_sound("Krypton_EvilScream") end
+		if SMODS.pseudorandom_probability(card, 'JimboExe', card.ability.extra.numerator, card.ability.extra.denominator) then G.jumpscare2 = 230 else G.jumpscare = 230 end	
+		if SMODS.pseudorandom_probability(card, 'JimboExe', card.ability.extra.numerator, card.ability.extra.denominator) then play_sound("Krypton_Lobotomy") else play_sound("Krypton_EvilScream") end
 		return 
 			{
 			Xmult = card.ability.extra.Xmult 
@@ -319,7 +315,6 @@ SMODS.Joker {
 		end
 	end
 }
-
 
 
 SMODS.Joker {
@@ -850,7 +845,7 @@ SMODS.Joker{
 
 SMODS.Joker {
   key = 'GreenJokerSoul',
-  config = { extra = { rounds = 0, roundtotal = 2 } },
+  config = { extra = { rounds = 0, roundtotal = 4 } },
   loc_txt = {
 	  name = "Green Joker's Soul",
 	  text = {
@@ -869,24 +864,19 @@ SMODS.Joker {
 		return { vars = { card.ability.extra.rounds, card.ability.extra.roundtotal} }
 	end,
 	calculate = function(self, card, context)	
-		if context.end_of_round and context.main_eval and card.ability.extra.rounds == 0 then
-			card.ability.extra.rounds = card.ability.extra.rounds + 1
-			return {
-				message = '1/2',
-			}
-		end
-		if context.end_of_round and context.main_eval and card.ability.extra.rounds == 1 then
-			card.ability.extra.rounds = card.ability.extra.rounds + 1
-			return {
-				message = 'Active!',
-			}
-		end
-		if context.end_of_round and context.main_eval and card.ability.extra.rounds >= card.ability.extra.roundtotal then
-			card.ability.extra.rounds = card.ability.extra.rounds + 1
-			return {
-				message = 'Active!',
-			}
-		end
+        if context.end_of_round and context.game_over == false and context.main_eval and not context.blueprint then
+            card.ability.extra.rounds = card.ability.extra.rounds + 1
+            if card.ability.extra.rounds == card.ability.extra.roundtotal then
+                local eval = function(card) return not card.REMOVED end
+                juice_card_until(card, eval, true)
+            end
+            return {
+                message = (card.ability.extra.rounds < card.ability.extra.roundtotal) and
+                    (card.ability.extra.rounds .. '/' .. card.ability.extra.roundtotal) or
+                    localize('k_active_ex'),
+                colour = G.C.FILTER
+            }
+        end
 		if context.selling_self and card.ability.extra.rounds >= card.ability.extra.roundtotal then
 			local GreenList = {}
 			for k, v in pairs(G.jokers.cards) do
@@ -910,14 +900,6 @@ SMODS.Joker {
 	end	
 }
 
-SMODS.ObjectType({
-    key = "Krypton_JaneJuliet",
-    default = "j_Krypton_Ryu_Ishigori", 
-    cards = {
-		["j_Krypton_Ryu_Ishigori"] = true,		
-    },
-})
-
 SMODS.Joker {
 	key = 'Ryu_Ishigori',
 	loc_txt = {
@@ -937,11 +919,11 @@ SMODS.Joker {
 	atlas = 'Modtest',
 	pos = { x = 7, y = 1 },
 	cost = 4,
-	weight = 10,	
+	--weight = 10,	
 	in_pool = function(self, args) return true, {allow_duplicates = true} end,
-	get_weight = function(self, weight)
+	--[[get_weight = function(self, weight)
 		return weight*(1.3^#SMODS.find_card(self.key))
-    end,
+    end,--]]
 	add_to_deck = function (self, card, from_debuff)
 		G.jokers:change_size(1*(card.ability.extra.SlotChange))
 	end,
@@ -949,7 +931,7 @@ SMODS.Joker {
 		G.jokers:change_size(-1*(card.ability.extra.SlotChange))
 	end,
 }
-
+--
 SMODS.ObjectType({
     key = "Krypton_Cat",
     default = "j_lucky_cat", -- this is what it should give when you have all of them and showman
@@ -1001,10 +983,7 @@ SMODS.Joker {
 		end
 	end
 }
--- IF YOU WANNA INCREASE WEIGHT OF JOKER IN ANOTHER, USE 
---if context.modify_weights then
---   return {key = 'j_modprefix_key', weight = number}
---end
+
 SMODS.Joker {
   key = 'Possum',
   config = { extra = { Xmult = 2, dollars = 5, odds = 10 } },
@@ -1066,6 +1045,7 @@ SMODS.Joker {
 			"{C:inactive,s:0.7}Lacerating Afterimages from Myriad Moments{}",
 		}
 	},
+
 	config = { extra = { repetitions = 1 } },
 	loc_vars = function(self, info_queue, card)
 		info_queue[#info_queue + 1] = G.P_CENTERS.m_Krypton_BladeTrailCard		
@@ -1085,8 +1065,7 @@ SMODS.Joker {
 		end
 	end
 }
--- AND HIGHER TEIR SHELBYS PREVENT LOWER FROM SPAWNING
--- TODO: MAKE FINLEY GIVE 2X CAT ODDS AND COME UP WITH CONCEPT FOR BLADETRAIL AFTERIMAGE JOKER + EDITION OR STICKER(?)
+
 ------------------------------------------------------------------------------------------------------------------
 
 local upd = Game.update
@@ -1144,7 +1123,7 @@ function love.draw()
     end
 	if G.jumpscare3 and (G.jumpscare3 > 0) then
         if KryptonacidPack.Jumpscare2 == nil then KryptonacidPack.Jumpscare2 = ImageLoader("Trollolo.png") end
-        love.graphics.setColor(1, 1, 1, 0.8125) 
+        love.graphics.setColor(1, 1, 1, 0.725) 
         love.graphics.draw(KryptonacidPack.Jumpscare2, 0*_xscale*2, 0*_yscale*2,0,_xscale*2*2,_yscale*2*2)
     end
 end

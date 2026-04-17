@@ -48,7 +48,7 @@ SMODS.Enhancement {
     loc_txt = {
         name = 'Bladetrail [Afterimage] Card',
         text = {
-            'When triggered with {C:attention}#4#{} {C:inactive}[#3#]{} total',
+            'When triggered with {C:attention}#4#{} {C:inactive}[#3#]{} other',
 			'scoring cards, Gain {X:mult,C:white}X#1#{} Mult',
 			'This effect Maxes out at {X:mult,C:white}X#5#{} Mult',
 			'{C:inactive}(Currently {}{X:mult,C:white}X#2#{}{C:inactive} Mult){}'
@@ -64,16 +64,16 @@ SMODS.Enhancement {
     discovered = true,
     no_collection = false,
     weight = 4,
-	config = { extra = { Xmult = 0.1, TotalXmult = 1, Required = 10, RequiredOriginal = 10, Max = 1.99 } },
+	config = { extra = { Xmult = 0.1, TotalXmult = 1, Required = 10, RequiredOriginal = 10, Max = 2.5 } },
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.Xmult, card.ability.extra.TotalXmult, card.ability.extra.Required, card.ability.extra.RequiredOriginal, card.ability.extra.Max }, }
 	end,
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.main_scoring then
-			if #context.scoring_hand > 1 then
+			if #context.scoring_hand > 0 then
 				card.ability.extra.Required = card.ability.extra.Required - (#context.scoring_hand)
 				while card.ability.extra.Required <= 0 do
-					card.ability.extra.Required = card.ability.extra.RequiredOriginal
+					card.ability.extra.Required = card.ability.extra.Required + card.ability.extra.RequiredOriginal
 					card.ability.extra.TotalXmult = card.ability.extra.TotalXmult + card.ability.extra.Xmult
 				end
 			end
@@ -88,10 +88,8 @@ SMODS.Enhancement {
 					Xmult = card.ability.extra.TotalXmult
 				}
 			end
-			if card.ability.extra.TotalXmult > 1.99 then
-				return {
-					Xmult = card.ability.extra.Max,
-				}
+			if card.ability.extra.TotalXmult > 2.5 then
+				card.ability.extra.TotalXmult = card.ability.extra.Max
 			end
 		end
 	end,
