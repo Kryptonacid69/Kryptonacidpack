@@ -28,6 +28,7 @@ SMODS.ObjectType({
 		["j_Krypton_Possum"] = true,
 		["j_Krypton_Ryu_Ishigori"] = true,
 		["j_Krypton_Ryu_Ishigori"] = true,	
+		["j_Krypton_DihuiBlade"] = true,
     },
 })
 
@@ -425,48 +426,47 @@ SMODS.ObjectType({
 		["j_yorick"] = true,
 		["j_bull"] = true, -- dies to matador, matador solos
 		["j_Krypton_IhateArchieKysDieDieDie"] = true,
-		["j_Krypton_LoganPaulJoker"] = true,
+		["j_Krypton_Logan"] = true,
 		["j_Krypton_Ryu_Ishigori"] = true,
 		
     },
 })
 
 SMODS.Joker {
-	key = 'LoganPaulJoker',
+	key = 'Logan',
 	loc_txt = {
-		name = "Uhh, Guys i think there's joker hanging there",
+		name = 'Logan Paul Joker',
 		text = {
-			"{X:mult,C:white}X#1#{} Mult for each {C:attention}joker{}",
-			"That will die in {C:attention}5 years{}",
-			"{C:inactive}(Currently {X:mult,C:white}X#2#{}{C:inactive} Mult){}",
+			"{X:mult,C:white} X#1# {} Mult, Increases by {X:mult,C:white} X#2# {}",
+			" For each joker that {C:attention}Dies in 5 years{}",
+			"{C:inactive}(Currently {X:mult,C:white}X#3#{C:inactive} Mult)",
+			"{C:inactive,s:0.6}Uhh guys? i think theres a joker hanging there.{}"
 		}
 	},
-	config = { extra = { Xmult = 1.5, Xmulttotal = 1 } },
+	config = { extra = { Xmult = 1, XmultMod = 1.5, XmultTotal = 1 } },
 	loc_vars = function(self, info_queue, card)
 		info_queue[#info_queue + 1] = {key = 'Krypton_Deadin5s', set = 'Other'}
-		return { vars = { card.ability.extra.Xmult, card.ability.extra.Xmulttotal } }
+		return { vars = { card.ability.extra.Xmult, card.ability.extra.XmultMod, card.ability.extra.XmultTotal, } }
 	end,
 	rarity = 3,
 	atlas = 'Modtest',
 	pos = { x = 13, y = 0 },
 	cost = 8,
 	calculate = function(self, card, context)
-    Paulcount = 0
+    paulcount = 0
     for i = 1, #G.jokers.cards do
         if G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Krypton_Deadin5 then
-            Paulcount = Paulcount + 1
+            paulcount = paulcount + 1
         end
     end
-	if Paulcount > 0 then card.ability.extra.Xmulttotal = (Paulcount * card.ability.extra.Xmult) + 1 else card.ability.extra.Xmulttotal = 1
-		if context.joker_main then
-			return {
-				Xmult = card.ability.extra.Xmulttotal
-			}
-			end
+	card.ability.extra.XmultTotal = paulcount * card.ability.extra.XmultMod+card.ability.extra.Xmult
+	if context.joker_main then
+        return {
+            Xmult = card.ability.extra.XmultTotal
+        }
 		end
 	end
 }
-
 SMODS.Joker {
     key = "bettingonanout",
     config = {
@@ -526,7 +526,7 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'MichaelCatV1',
-  config = { extra = { mult = 10, odds = 5 } },
+  config = { extra = { mult = 10, odds = 10 } },
   loc_txt = {
 	  name = 'Shelby',
 	  text = {
@@ -627,7 +627,7 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'MichaelCatV3',
-  config = { extra = { Xmult = 2.5, odds = 50, repetitions = 1 } },
+  config = { extra = { Xmult = 2.5, odds = 25, repetitions = 1 } },
   loc_txt = {
 	  name = 'Shelby - Punching',
 	  text = {
@@ -686,6 +686,7 @@ SMODS.Joker {
 		  "Gives {X:purple,C:white}^#1#{} Mult",
 		  "Retrigger{C:attention} ALL {}cards",
 		  "{C:attention}#2#{} Time",
+		  "{C:inactive,s:0.6}Penultimate.{}",
       }
   },
   rarity = 4,
