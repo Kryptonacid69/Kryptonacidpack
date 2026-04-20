@@ -64,7 +64,7 @@ SMODS.Enhancement {
     discovered = true,
     no_collection = false,
     weight = 4,
-	config = { extra = { Xmult = 0.1, TotalXmult = 1, Required = 10, RequiredOriginal = 10, Max = 1.2 } },
+	config = { extra = { Xmult = 0.1, TotalXmult = 1, Required = 10, RequiredOriginal = 10, Max = 3 } },
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.Xmult, card.ability.extra.TotalXmult, card.ability.extra.Required, card.ability.extra.RequiredOriginal, card.ability.extra.Max }, }
 	end,
