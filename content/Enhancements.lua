@@ -64,7 +64,7 @@ SMODS.Enhancement {
     discovered = true,
     no_collection = false,
     weight = 4,
-	config = { extra = { Xmult = 0.1, TotalXmult = 1, Required = 10, RequiredOriginal = 10, Max = 2.5 } },
+	config = { extra = { Xmult = 0.1, TotalXmult = 1, Required = 10, RequiredOriginal = 10, Max = 1.2 } },
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.Xmult, card.ability.extra.TotalXmult, card.ability.extra.Required, card.ability.extra.RequiredOriginal, card.ability.extra.Max }, }
 	end,
@@ -75,6 +75,9 @@ SMODS.Enhancement {
 				while card.ability.extra.Required <= 0 do
 					card.ability.extra.Required = card.ability.extra.Required + card.ability.extra.RequiredOriginal
 					card.ability.extra.TotalXmult = card.ability.extra.TotalXmult + card.ability.extra.Xmult
+				end
+				if card.ability.extra.TotalXmult > card.ability.extra.Max then
+					card.ability.extra.TotalXmult = card.ability.extra.Max
 				end
 			end
 			local StarBlade = next(SMODS.find_card('j_Krypton_DihuiBlade'))
@@ -87,9 +90,6 @@ SMODS.Enhancement {
 				return {
 					Xmult = card.ability.extra.TotalXmult
 				}
-			end
-			if card.ability.extra.TotalXmult > 2.5 then
-				card.ability.extra.TotalXmult = card.ability.extra.Max
 			end
 		end
 	end,

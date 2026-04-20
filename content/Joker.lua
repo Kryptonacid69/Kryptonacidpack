@@ -29,6 +29,7 @@ SMODS.ObjectType({
 		["j_Krypton_Ryu_Ishigori"] = true,
 		["j_Krypton_Ryu_Ishigori"] = true,	
 		["j_Krypton_DihuiBlade"] = true,
+		["j_Krypton_DihuiSword"] = true,
     },
 })
 
@@ -52,7 +53,7 @@ SMODS.Joker {
 	end,
 	rarity = 2,
 	atlas = 'Modtest',
-	pos = { x = 7, y = 0 },
+	pos = { x = 10, y = 0 },
 	cost = 4,
 	calculate = function(self, card, context)
 		if context.joker_main then
@@ -77,7 +78,7 @@ SMODS.Joker {
 	end,
 	rarity = 3,
 	atlas = 'Modtest',
-	pos = { x = 3, y = 0 },
+	pos = { x = 11, y = 0 },
 	cost = 10,
 	calculate = function(self, card, context)
 		if context.joker_main then
@@ -99,7 +100,7 @@ SMODS.Joker {
       }
   },
   rarity = 2,
-  pos = { x = 8, y = 0 },
+  pos = { x = 2, y = 0 },
   atlas = 'Modtest',
   cost = 5,
 
@@ -132,7 +133,7 @@ SMODS.Joker {
     }
   },
   rarity = 3,
-  pos = { x = 5, y = 0 },
+  pos = { x = 0, y = 0 },
   atlas = 'Modtest',
   cost = 5,
   blueprint_compat = false,
@@ -170,7 +171,7 @@ SMODS.Joker {
 SMODS.Joker {
   key = 'Obese_Joker',
   rarity = 3,
-  pos = { x = 0, y = 0 },
+  pos = { x = 4, y = 1 },
   config = { extra = { Xmult = 1.05, Scalar = 0.02, odds = 2 } },
   loc_txt = {
       name = 'Obese Joker',
@@ -241,7 +242,7 @@ SMODS.Joker {
 	config = { extra = {numerator = 1, denominator = 2, Xmult = 2 } },
 	rarity = 2,
 	atlas = 'Modtest',
-	pos = { x = 9, y = 0 },
+	pos = { x = 0, y = 1 },
 	cost = 5,
 	
 	loc_vars = function(self, info_queue, card)
@@ -293,7 +294,7 @@ SMODS.Joker {
 	end,
 	rarity = 2,
 	atlas = 'Modtest',
-	pos = { x = 11, y = 0 },
+	pos = { x = 3, y = 1 },
 	eternal_compat = false,
 	calculate = function(self, card, context)
 	if context.MouseClick and card.states.hover.is == true then
@@ -330,7 +331,7 @@ SMODS.Joker {
       }
   },
   rarity = 2,
-  pos = { x = 14, y = 0 },
+  pos = { x = 6, y = 1 },
   atlas = 'Modtest',
   cost = 8,
 	loc_vars = function(self, info_queue, card)
@@ -388,7 +389,7 @@ SMODS.Joker {
 	end,
 	rarity = 4,
 	atlas = 'Modtest',
-	pos = { x = 2, y = 0 },
+	pos = { x = 13, y = 0 },
 	cost = 20,
 	calculate = function(self, card, context)
     greencount = 0
@@ -450,7 +451,7 @@ SMODS.Joker {
 	end,
 	rarity = 3,
 	atlas = 'Modtest',
-	pos = { x = 13, y = 0 },
+	pos = { x = 3, y = 0 },
 	cost = 8,
 	calculate = function(self, card, context)
     paulcount = 0
@@ -482,7 +483,7 @@ SMODS.Joker {
 			'{C:inactive}(Self destructs){}'
         },
     },
-    pos = { x = 0, y = 1},
+    pos = { x = 1, y = 0},
     cost = 0,
     rarity = 1,
     blueprint_compat = true,
@@ -538,7 +539,7 @@ SMODS.Joker {
       }
   },
   rarity = 1,
-  pos = { x = 10, y = 0 },
+  pos = { x = 7, y = 1 },
   atlas = 'Modtest',
   cost = 5,
   eternal_compat = false,
@@ -584,7 +585,7 @@ SMODS.Joker {
       }
   },
   rarity = 2,
-  pos = { x = 2, y = 1 },
+  pos = { x = 8, y = 1 },
   atlas = 'Modtest',
   cost = 6,
     in_pool = function(self, args)
@@ -638,7 +639,7 @@ SMODS.Joker {
       }
   },
   rarity = 3,
-  pos = { x = 3, y = 1 },
+  pos = { x = 10, y = 1 },
   atlas = 'Modtest',
   cost = 8,
   in_pool = function(self, args)
@@ -690,7 +691,7 @@ SMODS.Joker {
       }
   },
   rarity = 4,
-  pos = { x = 1, y = 1 },
+  pos = { x = 9, y = 1 },
   atlas = 'Modtest',
   cost = 20,
     in_pool = function(self, args)
@@ -735,7 +736,7 @@ SMODS.Joker {
 	config = { extra = { Xmult = 2.125 } },
 	rarity = 1,
 	atlas = 'Modtest',
-	pos = { x = 4, y = 1 },
+	pos = { x = 2, y = 1 },
 	cost = -1,
 	
 	loc_vars = function(self, info_queue, card)
@@ -769,7 +770,7 @@ SMODS.Joker {
       }
   },
   rarity = 2,
-  pos = { x = 6, y = 1 },
+  pos = { x = 11, y = 1 },
   atlas = 'Modtest',
   cost = 6,
    
@@ -816,7 +817,7 @@ SMODS.Joker{
   blueprint_compat = true,
   eternal_compat = true,
   perishable_compat = false,
-  pos = { x = 5, y = 1 },
+  pos = { x = 5, y = 0 },
   config = { extra = { MultMod = 10, mult = 0 } },
 	
 	loc_vars = function(self,info_queue,card)
@@ -856,7 +857,7 @@ SMODS.Joker {
       }
   },
   rarity = 2,
-  pos = { x = 4, y = 0 },
+  pos = { x = 12, y = 0 },
   atlas = 'Modtest',
   cost = 6,
    
@@ -918,7 +919,7 @@ SMODS.Joker {
 	end,
 	rarity = 2,
 	atlas = 'Modtest',
-	pos = { x = 7, y = 1 },
+	pos = { x = 14, y = 0 },
 	cost = 4,
 	--weight = 10,	
 	in_pool = function(self, args) return true, {allow_duplicates = true} end,
@@ -967,7 +968,7 @@ SMODS.Joker {
 	end,
 	rarity = 4,
 	atlas = 'Modtest',
-	pos = { x = 8, y = 1 },
+	pos = { x = 9, y = 0 },
 	cost = 20,
 	calculate = function(self, card, context)
     CatCount = 0
@@ -998,7 +999,7 @@ SMODS.Joker {
       }
   },
   rarity = 2,
-  pos = { x = 9, y = 1 },
+  pos = { x = 5, y = 1 },
   atlas = 'Modtest',
   cost = 5,
   eternal_compat = false,
@@ -1036,13 +1037,11 @@ SMODS.Joker {
 
 
 SMODS.Joker {
-	key = 'DihuiBlade',
+	key = 'DihuiBladeSword',
 	loc_txt = {
 		name = "Dihui star's blade",
 		text = {
 			"{C:attention}Retrigger {}all {C:blue}Bladetrail Cards {}{C:attention}#1#{} time(s).",
-			"All {C:blue}Bladetrail{} Cards additionally Score",
-			"{X:chips,C:white}XChips{} Equal to their {X:mult,C:white}XMult{}",
 			"{C:inactive,s:0.7}Lacerating Afterimages from Myriad Moments{}",
 		}
 	},
@@ -1054,8 +1053,8 @@ SMODS.Joker {
 	end,
 	rarity = 3,
 	atlas = 'Modtest',
-	pos = { x = 10, y = 1},
-	cost = 10,
+	pos = { x = 7, y = 0},
+	cost = 8,
 	calculate = function(self, card, context)
         if context.repetition and context.cardarea == G.play and SMODS.get_enhancements(context.other_card)["m_Krypton_BladeTrailCard"] == true then
             return {
@@ -1067,6 +1066,27 @@ SMODS.Joker {
 	end
 }
 
+SMODS.Joker {
+	key = 'DihuiBlade',
+	loc_txt = {
+		name = "Dihui star's Sheath",
+		text = {
+			"All {C:blue}Bladetrail{} Cards Score {C:attention}Bonus{}",
+			"{X:chips,C:white}XChips{} Equal to their {X:mult,C:white}XMult{}",
+			"{C:inactive,s:0.7}'. . .  I'm weary of this stigma of a blade.'{}",
+		}
+	},
+
+	config = { extra = { repetitions = 1 } },
+	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = G.P_CENTERS.m_Krypton_BladeTrailCard		
+		return { vars = { card.ability.extra.repetitions } }
+	end,
+	rarity = 2,
+	atlas = 'Modtest',
+	pos = { x = 8, y = 0},
+	cost = 6,
+}
 ------------------------------------------------------------------------------------------------------------------
 
 local upd = Game.update
