@@ -936,10 +936,10 @@ SMODS.Joker {
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.SlotChange } }
 	end,
-	rarity = 2,
+	rarity = 1,
 	atlas = 'Modtest',
 	pos = { x = 14, y = 0 },
-	cost = 4,
+	cost = 6.5,
 	--weight = 10,	
 	in_pool = function(self, args) return true, {allow_duplicates = true} end,
 	--[[get_weight = function(self, weight)
