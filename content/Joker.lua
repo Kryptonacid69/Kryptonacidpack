@@ -30,6 +30,8 @@ SMODS.ObjectType({
 		["j_Krypton_Ryu_Ishigori"] = true,	
 		["j_Krypton_DihuiBlade"] = true,
 		["j_Krypton_DihuiSword"] = true,
+		["j_Krypton_Israel"] = true,
+		["j_Krypton_JokerGPT"] = true,
     },
 })
 
@@ -157,7 +159,7 @@ SMODS.Joker {
           end
         }))
         return {
-          message = 'glass!',
+          message = 'Glass!',
         }
       end
     end
@@ -176,7 +178,7 @@ SMODS.Joker {
   loc_txt = {
       name = 'Obese Joker',
 	  text = {
-		  "All cards score {X:mult,C:white}X#1#,{} But",
+		  "All cards score {X:mult,C:white}X#1#{} But,",
           "{C:green} #2# in #3# {}chance Cards Scored",
 		  "Are {C:attention}Eaten{}, And Gains",
 		  "{X:mult,C:white}X#4#{} Per Card {C:attention}Eaten{}"
@@ -201,14 +203,12 @@ SMODS.Joker {
 			end		
 		
 		if not context.blueprint and context.after and context.main_eval and pseudorandom('Obese_Joker') < G.GAME.probabilities.normal / card.ability.extra.odds then
-          local destroyed_cards = {}
-		  
-		  for _, v in ipairs(G.play.cards) do
-            destroyed_cards[#destroyed_cards + 1] = v
-			card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Scalar
-          end
-		  
+          local destroyed_cards = {}		  
 	      if pseudorandom('Obese_Joker') < G.GAME.probabilities.normal / card.ability.extra.odds then
+			for _, v in ipairs(G.play.cards) do
+				destroyed_cards[#destroyed_cards + 1] = v
+				card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Scalar
+			end
 			SMODS.destroy_cards(destroyed_cards)
 		    return {
 				message = 'Eaten!',
@@ -273,21 +273,25 @@ SMODS.Joker {
 			"{C:inactive,s:0.6}Superior race{}"
 		}
 	},
-	config = { extra = { timer = 10, Xmult = 3, currentquip = 0, Xquips = { 'Meow!', 'Munch Munch Munch', 'The Fog is Coming', 'I am Literally scratching your furniture' }  }, },
+	config = { extra = { timer = 10, Xmult = 3, currentquip = 0, Xquips = { 'Meow!', 'Munch Munch Munch', 'The Fog is Coming', 'I am Literally scratching your furniture' }, Stopper = 0  }, },
 	update = function(self, card, dt)
-	  card.ability.extra.timer = card.ability.extra.timer - (dt/4)
-	  if card.ability.extra.timer <= 0 then
-        card.ability.extra.timer = 69420
-            G.E_MANAGER:add_event(Event({
-                trigger = 'immediate',
-                func = function()                           
-                    play_sound('timpani')
+	    if card.ability.extra.timer >= 0 then
+		    card.ability.extra.timer = card.ability.extra.timer - (dt/4)
+	    end
+	    if card.ability.extra.timer < 0 and card.ability.extra.Stopper <= 0 then
+			card.ability.extra.timer = -69420
+			G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+				delay = 5,
+				func = function()                           
+					play_sound('timpani')
                     SMODS.destroy_cards(card)
 					return true
-                end
-            })) 
-        blocking = false		
-      end
+                end,
+			    blocking = false
+            }))
+			card.ability.extra.Stopper = 1
+        end
     end,
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.Xmult, card.ability.extra.Xquips, card.ability.extra.timer, } }
@@ -479,7 +483,7 @@ SMODS.Joker {
         name = 'Betting on an out',
         text = {
 			'{C:green} #1# in #2# {}Chance to Create a',
-			'Negative {C:blue}Soul{} Card When {C:attention}Cards Score{}',
+			'{C:dark_edition}Negative Soul{} Card When {C:attention}Cards Score{}',
 			'{C:inactive}(Self destructs){}'
         },
     },
@@ -505,7 +509,6 @@ SMODS.Joker {
                 if SMODS.pseudorandom_probability(card, '1', 1, card.ability.extra.odds, 'j_Krypton_bettingonanout', false) then
                     for i = 1, 1 do
                         G.E_MANAGER:add_event(Event({
-                            trigger = 'after',
                             delay = 0.4,
                             func = function()                           
                                 play_sound('timpani')
@@ -525,17 +528,27 @@ SMODS.Joker {
     end
 }
 
+SMODS.ObjectType({
+    key = "Krypton_MichealCats",
+    default = "j_Krypton_MichaelCatV1", 
+    cards = {
+        ["j_Krypton_MichaelCatV1"] = true,
+        ["j_Krypton_MichaelCatV2"] = true,
+        ["j_Krypton_MichaelCatV3"] = true,
+		["j_Krypton_MichaelCatV4"] = true,
+		
+    },
+})
+
 SMODS.Joker {
   key = 'MichaelCatV1',
-  config = { extra = { mult = 10, odds = 10 } },
+  config = { extra = { mult = 10, odds = 10, oddsscale = 5 } },
   loc_txt = {
 	  name = 'Shelby',
 	  text = {
 		  "Gives {C:mult}+#1#{} Mult",
 		  "{C:green}#2# in #3#{} Chance to upgrade",
 		  "when this {C:attention}joker triggers{}",
-		  "{C:inactive}(Cannot upgrade if higher teir{}",
-		  "{C:inactive}Shelby currently Exists.){}",
       }
   },
   rarity = 1,
@@ -547,10 +560,16 @@ SMODS.Joker {
 		return { vars = { card.ability.extra.mult, (G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
 	end,
 	calculate = function(self, card, context)
-		local Catcheck1 = next(SMODS.find_card('j_Krypton_MichaelCatV2'))
-		local Catcheck2 = next(SMODS.find_card('j_Krypton_MichaelCatV3'))
-		local Catcheck3 = next(SMODS.find_card('j_Krypton_MichaelCatV4'))
-		if context.joker_main and not context.blueprint and not Catcheck1 and not Catcheck2 and not Catcheck3 then
+		kittycount = 0
+		for i = 1, #G.jokers.cards do
+			if G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Krypton_MichealCats then
+				kittycount = kittycount + 1
+			end
+		end
+		if kittycount >= 2 then
+			card.ability.extra.odds = card.ability.extra.oddsscale * (card.ability.extra.oddsscale ^ (kittycount - 1))
+		end
+		if context.joker_main and not context.blueprint then
 		    if pseudorandom('MichaelCatV1') < G.GAME.probabilities.normal / card.ability.extra.odds then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
@@ -733,7 +752,7 @@ SMODS.Joker {
 		}
 	},
 	
-	config = { extra = { Xmult = 2.125 } },
+	config = { extra = { Xmult = 2.25 } },
 	rarity = 1,
 	atlas = 'Modtest',
 	pos = { x = 2, y = 1 },
@@ -749,9 +768,9 @@ SMODS.Joker {
 		return 
 			{
 			Xmult = card.ability.extra.Xmult 
-			}
+			} 
 		end
-		if not context.blueprint and context.end_of_round and context.game_over then
+		if not context.blueprint and context.end_of_round and context.game_over or context.selling_self then
 			if G.jumpscare3 == nil then G.jumpscare3 = 0 end
 				G.jumpscare3 = 0
 		end
@@ -847,7 +866,7 @@ SMODS.Joker{
 
 SMODS.Joker {
   key = 'GreenJokerSoul',
-  config = { extra = { rounds = 0, roundtotal = 4 } },
+  config = { extra = { rounds = 0, roundtotal = 3 } },
   loc_txt = {
 	  name = "Green Joker's Soul",
 	  text = {
@@ -1027,11 +1046,9 @@ SMODS.Joker {
 				message = localize { type = 'variable',  key = 'a_xmult', vars = { card.ability.extra.Xmult } },
 			}   
 		end
-		if context.end_of_round and context.main_eval then
-			return {
-				dollars = card.ability.extra.dollars
-			}	
-		end
+	end,
+	calc_dollar_bonus = function(self, card)
+		return card.ability.extra.dollars
 	end
 }
 
@@ -1087,6 +1104,109 @@ SMODS.Joker {
 	pos = { x = 8, y = 0},
 	cost = 6,
 }
+-- effect made, But it doesnt work without the dummy talisman function. i need to add this later to make the G.GAME.dollars comparison work.
+to_big = to_big or function(x) return x end
+
+SMODS.Joker {
+	key = 'Israel',
+	loc_txt = {
+		name = "Israel",
+		text = {
+			"Stores {C:attention}ALL{} {C:money}Money{} Gained.",
+			"Gain {C:attention}Stored{} Money {X:money,C:white}X#1#{}",
+			"When {C:attention}Selling{} This Joker",
+			"{C:inactive}(Currently {}{C:money}$#2#{}{C:inactive}/{X:money,C:white}$#3#{}{C:inactive}){}",
+			"{C:inactive,s:0.75}Your money was promised{}",
+			"{C:inactive,s:0.75}to it 3000 years ago.{}",
+		}
+	},
+
+	config = { extra = { Xmoney = 3, StoredMoney = 0} },
+	loc_vars = function(self, info_queue, card)	
+		return { vars = { card.ability.extra.Xmoney, card.ability.extra.StoredMoney, (card.ability.extra.StoredMoney * card.ability.extra.Xmoney) } }
+	end,
+	rarity = 3,
+	atlas = 'Modtest',
+	pos = { x = 13, y = 1},
+	cost = 10,
+	calculate = function(self, card, context)
+		if to_big(G.GAME.dollars) >= to_big(0) and not A then
+			card.ability.extra.StoredMoney = card.ability.extra.StoredMoney + G.GAME.dollars
+			G.GAME.dollars = 0
+			if context.selling_self then
+				A = 'wawa'
+				return {
+					dollars = card.ability.extra.StoredMoney * card.ability.extra.Xmoney
+				}
+			end
+		end
+    end,
+    in_pool = function(self, args)
+		if A then 
+			return false
+		end
+    end
+}
+
+SMODS.ObjectType({
+    key = "Krypton_AIFuel",
+    default = "j_splash", -- this is what it should give when you have all of them and showman
+    cards = {
+        ["j_splash"] = true,
+		["j_Krypton_Ryu_Ishigori"] = true,
+    },
+})
+
+SMODS.Joker {
+	key = 'JokerGPT',
+	loc_txt = {
+		name = "JokerGPT",
+		text = {
+			"If {C:blue}Splash{} is present at {C:attention}End of Round{},",
+			"This Joker {C:attention}Destroys{} it and creates",
+			" a Random {C:dark_edition}Negative{} {C:attention}Common{} Joker",
+			"{C:inactive,s:0.7}Filthy Clanker{}",
+		}
+	},
+
+	config = { extra = {} },
+	loc_vars = function(self, info_queue, card)	
+        info_queue[#info_queue+1] = G.P_CENTERS.j_splash		
+		return { vars = { card.ability.extra.Xmoney } }
+	end,
+	rarity = 2,
+	atlas = 'Modtest',
+	pos = { x = 14, y = 1},
+	cost = 6,
+	calculate = function(self, card, context)
+		if context.end_of_round and context.main_eval then
+			local AIFuel = {}
+			for k, v in pairs(G.jokers.cards) do 
+				if G.jokers.cards[k].config.center.pools and G.jokers.cards[k].config.center.pools.Krypton_AIFuel then
+					table.insert(AIFuel, v)
+				end
+			end
+			if #AIFuel > 0 then
+				local AIFuelWinner =
+					pseudorandom_element(AIFuel, pseudoseed("AIFuel"))
+				SMODS.destroy_cards(AIFuelWinner)
+				G.E_MANAGER:add_event(Event({
+					trigger = 'after',
+					delay = 0.4,
+					func = function()
+						play_sound('timpani')
+						SMODS.add_card({ set = 'Joker', rarity = 'Common' , edition = 'e_negative' })
+						card:juice_up(0.3, 0.5)
+						message = 'Generated!'
+						return true
+					end
+				}))
+			end
+		end
+    end
+}
+
+
 ------------------------------------------------------------------------------------------------------------------
 
 local upd = Game.update
