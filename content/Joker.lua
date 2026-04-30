@@ -1,3 +1,21 @@
+SMODS.Sound {
+	key = "emult",
+	path = "ExponentialMult.ogg",
+}
+SMODS.Sound {
+	key = "echips",
+	path = "ExponentialChips.ogg",
+}
+SMODS.Sound {
+	key = "eemult",
+	path = "TetrationalMult.ogg",
+}
+SMODS.Sound {
+	key = "eechips",
+	path = "TetrationalChips.ogg",
+}
+
+
 SMODS.Atlas {
   key = 'modicon',
   px = 33,
@@ -404,8 +422,12 @@ SMODS.Joker {
     end
 	card.ability.extra.emulttotal = greencount * card.ability.extra.emult_mod+card.ability.extra.emult
 	if context.joker_main then
-        return {
-            emult = card.ability.extra.emulttotal
+		return {
+            emult = card.ability.extra.emulttotal,
+			remove_default_message = true,
+			message = ('^' .. card.ability.extra.emulttotal),
+			colour = G.C.PURPLE,
+			play_sound('emult')
         }
 		end
 	end
@@ -737,6 +759,10 @@ SMODS.Joker {
 		if context.joker_main then	
 			return {
 			emult = card.ability.extra.emult,
+			remove_default_message = true,
+			message = ('^' .. card.ability.extra.emult),
+			colour = G.C.PURPLE,
+			play_sound('emult')
 			}   
 	    end
 	end
@@ -936,10 +962,10 @@ SMODS.Joker {
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.SlotChange } }
 	end,
-	rarity = 1,
+	rarity = 2,
 	atlas = 'Modtest',
 	pos = { x = 14, y = 0 },
-	cost = 6.5,
+	cost = 4,
 	--weight = 10,	
 	in_pool = function(self, args) return true, {allow_duplicates = true} end,
 	--[[get_weight = function(self, weight)
@@ -974,33 +1000,42 @@ SMODS.Joker {
 	loc_txt = {
 		name = 'Finley',
 		text = {
-			"{X:purple,C:white} ^#1# {} Mult, Increases by {X:purple,C:white} ^#2# {}",
+			"{X:purple,C:white} ^#1# {} {C:chips}Chips{}, Increases by {X:purple,C:white} ^#2# {}",
 			" For each {C:attention}Cat Joker{} owned",
-			"{C:inactive}(Currently {X:purple,C:white}^#3#{C:inactive} Mult)",
+			"{C:inactive}(Currently {X:purple,C:white}^#3#{C:inactive} {C:chips}Chips{}{C:inactive}){}",
 			"{C:inactive,s:0.8}My Cutie Patootie{}"
 		}
 	},
-	config = { extra = { emult = 1.1, emult_mod = 0.2, emulttotal = 1.1 } },
+	config = { extra = { echips = 1, echips_mod = 1/3, echipstotal = 1 + 1/3 } },
 	loc_vars = function(self, info_queue, card)
 		info_queue[#info_queue + 1] = {key = 'Krypton_CatGroupText', set = 'Other'}
-		return { vars = { card.ability.extra.emult, card.ability.extra.emult_mod, card.ability.extra.emulttotal, } }
+		return { vars = { card.ability.extra.echips, card.ability.extra.echips_mod, card.ability.extra.echipstotal, } }
 	end,
 	rarity = 4,
 	atlas = 'Modtest',
 	pos = { x = 9, y = 0 },
 	cost = 20,
 	calculate = function(self, card, context)
-    CatCount = 0
-    for i = 1, #G.jokers.cards do
-        if G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Krypton_Cat then
-            CatCount = CatCount + 1
-        end
-    end
-	card.ability.extra.emulttotal = (CatCount * card.ability.extra.emult_mod) + card.ability.extra.emult
-	if context.joker_main then
-        return {
-            emult = card.ability.extra.emulttotal
-        }
+		CatCount = 0
+		for i = 1, #G.jokers.cards do
+			if G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Krypton_Cat then
+				CatCount = CatCount + 1
+			end
+		end
+		card.ability.extra.echipstotal = (CatCount * card.ability.extra.echips_mod) + card.ability.extra.echips
+		if context.joker_main then
+			local MessageBig = (card.ability.extra.echipstotal) * 100 
+			local MessageRounded = MessageBig - math.floor(MessageBig)
+			local MessageFinal = (math.floor(MessageRounded * 100)/100)+ math.floor(card.ability.extra.echipstotal)			
+			if MessageRounded > 0.5 then	
+				local MessageFinal = (math.floor(MessageRounded * 100)/100) + math.floor(card.ability.extra.echipstotal) + 0.01
+			end
+			return {
+				echips = card.ability.extra.echipstotal,
+				remove_default_message = true,
+				message = ('^' .. MessageFinal),
+				colour = G.C.PURPLE,
+			}
 		end
 	end
 }
@@ -1205,8 +1240,54 @@ SMODS.Joker {
 		end
     end
 }
-
-
+--[[
+SMODS.Joker {
+	key = "Kitty :3",
+	pos = { x = 1, y = 1 },
+	config = { extra = { Xstats = 1.25 } },
+	rarity = 3,
+	eternal_compat = false,
+	demicoloncompat = true,
+	cost = 5,
+	atlas = "Modtest",
+	loc_txt = {
+		name = "Scale tester",
+		text = {
+			"Sell for {X:mult,C:white}X#1#{} Joker {C:attention}Values{}",
+		}
+	},	
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card.ability.extra.Xstats } }
+	end,
+	calculate = function(self, card, context)
+		if context.main_eval and context.end_of_round then			
+			local Eaten = {}
+			for k, v in pairs(G.jokers.cards) do 
+				if G.jokers.cards[k] then
+					table.insert(Eaten, v)
+				end
+			end
+			if #Eaten > 0 then
+				local EatenYes =
+					pseudorandom_element(Eaten, pseudoseed("Eaten"))
+				SMODS.destroy_cards(EatenYes)
+				local Scaled =
+					pseudorandom_element(Eaten, pseudoseed("Eaten"))
+				local check = false
+				for i, v in pairs(Scaled) do
+					if v ~= card then
+						if not Card.no(v, "immutable", true) then
+							KryptonacidPack.manipulate(v, { value = card.ability.extra.Xstats })
+							check = true
+						end
+					end
+				end
+				return {('X' .. card.ability.extra.Xstats)}						
+			end
+		end
+	end,
+}
+---]]
 ------------------------------------------------------------------------------------------------------------------
 
 local upd = Game.update

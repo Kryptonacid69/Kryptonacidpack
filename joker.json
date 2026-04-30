@@ -1,5 +1,5 @@
 {
-	"id": "KryptonacidPack",
+	"id": "Krypton",
 	"name": "KryptonacidPack",
 	"author": ["Kryptonacid69"],
 	"description": "Has stuff that me or my friends thought was cool or funny. Enjoy!",
@@ -8,9 +8,8 @@
 	"priority": -69420,
 	"badge_colour": "7d0093",
 	"badge_text_colour": "FFA500",
-	"version": "1.2.0",
+	"version": "1.2.2",
 	"dependencies": [
 		"Steamodded (>=1.0.0~BETA-1531zeebee)",
-		"Talisman",
 	],
 }
