@@ -1,3 +1,20 @@
+SMODS.Sound {
+	key = "emult",
+	path = "ExponentialMult.ogg",
+}
+SMODS.Sound {
+	key = "echips",
+	path = "ExponentialChips.ogg",
+}
+SMODS.Sound {
+	key = "eemult",
+	path = "TetrationalMult.ogg",
+}
+SMODS.Sound {
+	key = "eechips",
+	path = "TetrationalChips.ogg",
+}
+
 local add_exponentials = not (SMODS.Mods.Talisman or SMODS.Mods.cdataman or {}).can_load
 
 local calc_exponential = function(...) end

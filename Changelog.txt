@@ -8,3 +8,4 @@
 - talisman no longer required, i have implemented a version of my own
 - same with scaling, 
 - probably v0.3.0 worthy?
+- shelbys now keep edition throughout transformation

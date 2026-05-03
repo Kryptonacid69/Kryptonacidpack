@@ -1,4 +1,4 @@
-SMODS.Atlas {
+--[[SMODS.Atlas {
 	key = 'StickerAtlas',
 	path = 'StickerSpritesheet.png',
 	px = 71,
@@ -21,4 +21,4 @@ SMODS.Sticker {
     badge_colour = HEX("2fb555"),
     atlas = "StickerAtlas",
     default_compat = true
-}
+}--]]

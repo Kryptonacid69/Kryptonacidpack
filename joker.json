@@ -2,7 +2,7 @@
 	"id": "Krypton",
 	"name": "KryptonacidPack",
 	"author": ["Kryptonacid69"],
-	"description": "Has stuff that me or my friends thought was cool or funny. Enjoy!",
+	"description": "Has stuff that me or my friends thought was cool or funny. Enjoy!  NOTE: this mod doesn't Require talisman, but it is HIGHLY recommended for increasing the score cap.",
 	"prefix": "Krypton",
 	"main_file": "core.lua",
 	"priority": -69420,

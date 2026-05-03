@@ -605,14 +605,12 @@ function KryptonacidPack.pulse_scoring_window_colors(new_color, fade_in, hold, f
 	for _, v in ipairs(KryptonacidPack.scoring_window_pulse_targets) do
 		ease_colour(v[1], copy_table(new_color), fade_in)
 	end
-	-- TARGET: add more colors to pulse on
 
 	KryptonacidPack.event{
 		function()
 			for _, v in ipairs(KryptonacidPack.scoring_window_pulse_targets) do
 				ease_colour(v[1], v[2], fade_out)
 			end
-			-- TARGET: add more colors to pulse off
 
 			return true
 		end,

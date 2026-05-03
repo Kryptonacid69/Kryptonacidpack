@@ -420,14 +420,14 @@ SMODS.Joker {
             greencount = greencount + 1
         end
     end
-	card.ability.extra.emulttotal = greencount * card.ability.extra.emult_mod+card.ability.extra.emult
-	if context.joker_main then
+	card.ability.extra.emulttotal = (greencount - 1) * card.ability.extra.emult_mod + card.ability.extra.emult
+	if context.joker_main then		
 		return {
             emult = card.ability.extra.emulttotal,
 			remove_default_message = true,
-			message = ('^' .. card.ability.extra.emulttotal),
+			message = ('^' .. card.ability.extra.emulttotal), 
 			colour = G.C.PURPLE,
-			play_sound('emult')
+			sound = 'Krypton_emult',
         }
 		end
 	end
@@ -591,20 +591,22 @@ SMODS.Joker {
 		if kittycount >= 2 then
 			card.ability.extra.odds = card.ability.extra.oddsscale * (card.ability.extra.oddsscale ^ (kittycount - 1))
 		end
-		if context.joker_main and not context.blueprint then
+		if context.final_scoring_step and not context.blueprint then
 		    if pseudorandom('MichaelCatV1') < G.GAME.probabilities.normal / card.ability.extra.odds then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
 					delay = 0.4,
 					func = function()                           
 						play_sound('timpani')
-						SMODS.add_card({ set = 'joker', key = 'j_Krypton_MichaelCatV2'})                            
+						SMODS.add_card({ set = 'joker', key = 'j_Krypton_MichaelCatV2', edition = card.edition})                            
 						card:juice_up(0.3, 0.5)
 						SMODS.destroy_cards(card)
 						return true
 					end	
 				}))	
 			end	
+		end
+		if context.joker_main then
 			return {
 			mult_mod = card.ability.extra.mult,
 			message = localize { type = 'variable',  key = 'a_mult', vars = { card.ability.extra.mult } },
@@ -645,20 +647,22 @@ SMODS.Joker {
 				}
 			end
 		end
-		if context.joker_main and not context.blueprint then
+		if context.final_scoring_step and not context.blueprint then
 		    if pseudorandom('MichaelCatV2') < G.GAME.probabilities.normal / card.ability.extra.odds then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
 					delay = 0.4,
 					func = function()                           
 						play_sound('timpani')
-						SMODS.add_card({ set = 'joker', key = 'j_Krypton_MichaelCatV3'})                            
+						SMODS.add_card({ set = 'joker', key = 'j_Krypton_MichaelCatV3', edition = card.edition})                            
 						card:juice_up(0.3, 0.5)
 						SMODS.destroy_cards(card)
 						return true
 					end	
 				}))	
 			end	
+		end
+		if context.joker_main then
 			return {
 			Xmult_mod = card.ability.extra.Xmult,
 			message = localize { type = 'variable',  key = 'a_xmult', vars = { card.ability.extra.Xmult } },
@@ -697,23 +701,24 @@ SMODS.Joker {
 				card = card,
 			}
 		end
-		if context.joker_main and not context.blueprint then
+		if context.final_scoring_step and not context.blueprint then
 		    if pseudorandom('MichaelCatV3') < G.GAME.probabilities.normal / card.ability.extra.odds then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
 					delay = 0.4,
 					func = function()                           
 						play_sound('timpani')
-						SMODS.add_card({ set = 'joker', key = 'j_Krypton_MichaelCatV4'})                            
+						SMODS.add_card({ set = 'joker', key = 'j_Krypton_MichaelCatV4', edition = card.edition})                            
 						card:juice_up(0.3, 0.5)
 						SMODS.destroy_cards(card)
 						return true
 					end	
 				}))	
 			end	
+		end
+		if context.joker_main then
 			return {
-			Xmult_mod = card.ability.extra.Xmult,
-			message = localize { type = 'variable',  key = 'a_xmult', vars = { card.ability.extra.Xmult } },
+			Xmult = card.ability.extra.Xmult,
 			}   
 	    end
 	end
@@ -762,7 +767,7 @@ SMODS.Joker {
 			remove_default_message = true,
 			message = ('^' .. card.ability.extra.emult),
 			colour = G.C.PURPLE,
-			play_sound('emult')
+			sound = 'Krypton_emult',
 			}   
 	    end
 	end
@@ -774,7 +779,7 @@ SMODS.Joker {
 		name = 'Troll Joker',
 		text = {
 			"Grants {X:mult,C:white} X#3# {} Mult",
-			"{C:mult}Annoying Bitch{} "
+			"{C:mult,s:1.1}Annoying Bitch{} "
 		}
 	},
 	
@@ -1006,7 +1011,7 @@ SMODS.Joker {
 			"{C:inactive,s:0.8}My Cutie Patootie{}"
 		}
 	},
-	config = { extra = { echips = 1, echips_mod = 1/3, echipstotal = 1 + 1/3 } },
+	config = { extra = { echips = 1 + 1/3, echips_mod = 1/3, echipstotal = 1 + 1/3 } },
 	loc_vars = function(self, info_queue, card)
 		info_queue[#info_queue + 1] = {key = 'Krypton_CatGroupText', set = 'Other'}
 		return { vars = { card.ability.extra.echips, card.ability.extra.echips_mod, card.ability.extra.echipstotal, } }
@@ -1022,19 +1027,20 @@ SMODS.Joker {
 				CatCount = CatCount + 1
 			end
 		end
-		card.ability.extra.echipstotal = (CatCount * card.ability.extra.echips_mod) + card.ability.extra.echips
+		card.ability.extra.echipstotal = ((CatCount - 1) * card.ability.extra.echips_mod) + card.ability.extra.echips
 		if context.joker_main then
 			local MessageBig = (card.ability.extra.echipstotal) * 100 
 			local MessageRounded = MessageBig - math.floor(MessageBig)
-			local MessageFinal = (math.floor(MessageRounded * 100)/100)+ math.floor(card.ability.extra.echipstotal)			
+			local MessageFinal = (math.floor(MessageRounded * 100)/100)+ math.floor(card.ability.extra.echipstotal)		
 			if MessageRounded > 0.5 then	
-				local MessageFinal = (math.floor(MessageRounded * 100)/100) + math.floor(card.ability.extra.echipstotal) + 0.01
+				MessageFinal = (math.floor(MessageRounded * 100)/100) + math.floor(card.ability.extra.echipstotal) + 0.01
 			end
 			return {
 				echips = card.ability.extra.echipstotal,
 				remove_default_message = true,
 				message = ('^' .. MessageFinal),
 				colour = G.C.PURPLE,
+				sound = 'Krypton_echips',
 			}
 		end
 	end
@@ -1151,8 +1157,9 @@ SMODS.Joker {
 			"Gain {C:attention}Stored{} Money {X:money,C:white}X#1#{}",
 			"When {C:attention}Selling{} This Joker",
 			"{C:inactive}(Currently {}{C:money}$#2#{}{C:inactive}/{X:money,C:white}$#3#{}{C:inactive}){}",
-			"{C:inactive,s:0.75}Your money was promised{}",
-			"{C:inactive,s:0.75}to it 3000 years ago.{}",
+			"{C:mult,s:0.75}There can only be one israel per run.{}",
+			"{C:inactive,s:0.65}Your money was promised{}",
+			"{C:inactive,s:0.65}to it 3000 years ago.{}",
 		}
 	},
 
@@ -1240,54 +1247,82 @@ SMODS.Joker {
 		end
     end
 }
+
+SMODS.ObjectType({
+    key = "Krypton_Black_HolePool",
+    default = "j_Krypton_Event_Horizon",
+    cards = {
+		["j_Krypton_Event_Horizon"] = true,
+    },
+})
+
+--  This joker currently destroys eternal jokers, and itself. additionally, it scales itself. Change that next time
+--  Make an awesome side on view of an event horizon and accretion disk for art
+-- get the gradient working too, maybe add purple to it for exponential mult? i think its is formatted like {V:key}{}
 --[[
+SMODS.Gradient {
+	key = 'stats',
+	colors = {
+		[G.C.MULT] = 0,
+		[G.C.CHIPS] = 1,
+	},
+}
+
 SMODS.Joker {
-	key = "Kitty :3",
-	pos = { x = 1, y = 1 },
-	config = { extra = { Xstats = 1.25 } },
+	key = 'Event_Horizon',
+	loc_txt = {
+		name = 'Event Horizon',
+		text = {
+			'A {C:attention}Random{} Joker is Destroyed at {C:attention}Round end{},',
+			'and another gains {X:mult,C:white}X#1#{} Stats',
+			'{C:inactive}(Cannot affect itself){}',
+		}
+	},
+	config = { extra = { increase = 1.1 } },
 	rarity = 3,
 	eternal_compat = false,
-	demicoloncompat = true,
 	cost = 5,
-	atlas = "Modtest",
-	loc_txt = {
-		name = "Scale tester",
-		text = {
-			"Sell for {X:mult,C:white}X#1#{} Joker {C:attention}Values{}",
-		}
-	},	
+	atlas = 'Modtest',
+	pos = { x = 14, y = 1},
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.Xstats } }
+		return { vars = { card.ability.extra.increase } }
 	end,
 	calculate = function(self, card, context)
-		if context.main_eval and context.end_of_round then			
-			local Eaten = {}
-			for k, v in pairs(G.jokers.cards) do 
-				if G.jokers.cards[k] then
-					table.insert(Eaten, v)
-				end
+		if context.end_of_round and context.main_eval then
+			local BlackHoleTable = {}			
+			for k, v in pairs(G.jokers.cards) do					
+				if v.ability.set == "Joker" then
+					table.insert(BlackHoleTable, v)
+				end	
 			end
-			if #Eaten > 0 then
-				local EatenYes =
-					pseudorandom_element(Eaten, pseudoseed("Eaten"))
-				SMODS.destroy_cards(EatenYes)
-				local Scaled =
-					pseudorandom_element(Eaten, pseudoseed("Eaten"))
-				local check = false
-				for i, v in pairs(Scaled) do
-					if v ~= card then
-						if not Card.no(v, "immutable", true) then
-							KryptonacidPack.manipulate(v, { value = card.ability.extra.Xstats })
-							check = true
-						end
+			if #BlackHoleTable > 0 then
+				local IncreasedJoker =
+					pseudorandom_element(BlackHoleTable, pseudoseed("BlackHoleTable"))
+				if IncreasedJoker ~= card then
+					if not Card.no(IncreasedJoker, "immutable", true) then
+						KryptonacidPack.manipulate(IncreasedJoker, { value = card.ability.extra.increase })
+						check = true
 					end
 				end
-				return {('X' .. card.ability.extra.Xstats)}						
+				local AbsorbedJoker =
+					pseudorandom_element(BlackHoleTable, pseudoseed("Spagehttification"))
+				SMODS.destroy_cards(AbsorbedJoker)
+			end
+			local check = false
+			if check then
+				card_eval_status_text(
+					card,
+					"extra",
+					nil,
+					nil,
+					nil,
+					{ message = localize("k_upgrade_ex"), colour = G.C.GREEN }
+				)
 			end
 		end
 	end,
 }
----]]
+--]]
 ------------------------------------------------------------------------------------------------------------------
 
 local upd = Game.update
