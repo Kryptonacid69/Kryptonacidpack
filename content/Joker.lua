@@ -1145,9 +1145,9 @@ SMODS.Joker {
 	pos = { x = 8, y = 0},
 	cost = 6,
 }
--- effect made, But it doesnt work without the dummy talisman function. i need to add this later to make the G.GAME.dollars comparison work.
-to_big = to_big or function(x) return x end
 
+to_big = to_big or function(x) return x end
+--[[ MAKE HIM WORK DUMBASS
 SMODS.Joker {
 	key = 'Israel',
 	loc_txt = {
@@ -1189,7 +1189,7 @@ SMODS.Joker {
 		end
     end
 }
-
+--]]
 SMODS.ObjectType({
     key = "Krypton_AIFuel",
     default = "j_splash", -- this is what it should give when you have all of them and showman
