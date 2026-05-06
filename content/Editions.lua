@@ -15,7 +15,7 @@ SMODS.Edition {
         label = "Green",
         text = {
             "{C:attention}Retriggers{} once For",
-			"Each {C:green}Green{} Joker Held",
+			"Each {C:Krypton_green}Green{} Joker Held",
 			"{C:inactive}(Twice Maximum){}",
         }
     },
@@ -28,7 +28,7 @@ SMODS.Edition {
 	extra_cost = 4,
 	in_shop = true,
 	weight = 3,
-	badge_colour = G.C.GREEN,
+	badge_colour = G.C.HEX.GREEN,
 	loc_vars = function(self, info_queue, card)
 		info_queue[#info_queue + 1] = {key = 'Krypton_GreenSquareloctext', set = 'Other'}
 	end,	
@@ -46,6 +46,7 @@ SMODS.Edition {
 			if (context.repetition or context.retrigger_joker_check) and context.other_card == card then								
 				return {
 					repetitions = greencount,
+					remove_default_message = true,
 					sound = "Krypton_GreenSound",
 				}
 			end

@@ -17,16 +17,15 @@ KryptonacidPack.misprintize_value_blacklist = {
 	times_played = false,
 	extra_slots_used = false,
 	card_limit = false,
-	-- TARGET: Misprintize Value Blacklist (format: key = false, )
 }
 KryptonacidPack.misprintize_bignum_blacklist = {
 	odds = false,
 	cry_prob = false,
 	perma_repetitions = false,
 	repetitions = false,
-	nominal = false, --no clue why this was commented, it causes a crash if not
+	nominal = false, 
 }
-KryptonacidPack.misprintize_value_cap = { --yeahh.. this is mostly just for retriggers, but i might as well make it fully functional
+KryptonacidPack.misprintize_value_cap = { 
 	perma_repetitions = 40,
 	repetitions = 40,
 }
@@ -44,7 +43,7 @@ function cry_format(number, str)
 	end
 	return tonumber(str:format((Big and to_number(to_big(number)) or number)))
 end
---use ID to work with glitched/misprint
+
 function Card:get_nominal(mod)
 	local mult = 1
 	local rank_mult = 1
@@ -65,12 +64,6 @@ function Card:get_nominal(mod)
 		+ 0.000001 * self.unique_val
 end
 
----Manipulates the values of a given card.
----`func` takes priority over all other arguments and returns the new value.
----`min` and `max` can be set to use a logarithmically distributed random value as the amount, else `value` will be used.
----@param card table|Card the `Card` object to manipulate the `ability` values of.
----@param args table|{min?: number, max?: number, type?: string, value?: number, func?: fun(num: number, args: table, is_big?: boolean, name: any), dont_stack?: boolean, no_deck_effects?: boolean, bypass_checks?: boolean}
----@return boolean|nil
 function KryptonacidPack.manipulate(card, args)
 	if not card or not card.config or not card.config.center then return end
 	if not Card.no(card, "immutable", true) or (args and args.bypass_checks) then

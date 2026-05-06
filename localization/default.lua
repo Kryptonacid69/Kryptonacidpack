@@ -12,9 +12,9 @@ return {
             Krypton_GreenSquareloctext = {
                             name = "Green Jokers:",
                             text = {
-                                "{C:green}Green joker{}, {C:green}Greener Joker{}", 
-								"{C:green}Greenest Joker{}, {C:green}Green Square{}",
-								"{C:green}Green Joker's Soul{}",
+                                "{C:Krypton_green}Green joker{}, {C:Krypton_green}Greener Joker{}", 
+								"{C:Krypton_green}Greenest Joker{}, {C:Krypton_green}Green Square{}",
+								"{C:Krypton_green}Green Joker's Soul{}",
                             },
             },
             Krypton_CatGroupText = {

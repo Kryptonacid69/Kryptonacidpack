@@ -50,6 +50,8 @@ SMODS.ObjectType({
 		["j_Krypton_DihuiSword"] = true,
 		["j_Krypton_Israel"] = true,
 		["j_Krypton_JokerGPT"] = true,
+		["j_Krypton_Event_Horizon"] = true,
+		["j_Krypton_Jewpiter"] = true,
     },
 })
 
@@ -284,35 +286,17 @@ SMODS.Joker {
 	key = 'LiamCat',
 	loc_txt = {
 		name = 'Jungle',
-		text = {
-			"{X:mult,C:white} X#1# {} Mult, But ",
-			"Explodes if Left",
-			"Alone for {C:attention}#3# Seconds",
-			"{C:inactive,s:0.6}Superior race{}"
+		text = {			
+			"{X:mult,C:white} X#3# {} Mult, Gains {X:mult,C:white}X#4#{} When {C:attention}Clicked on",
+			"{C:green}#1# in #2#{} Chance to {C:mult}Destroy{} Itself",
+			"When {C:attention}Clicked on",
+			"{C:inactive}(Currently {X:mult,C:white}X#5#{}{C:inactive} Mult){}",
+			"{C:inactive,s:0.6}Superior race{}",
 		}
 	},
-	config = { extra = { timer = 10, Xmult = 3, currentquip = 0, Xquips = { 'Meow!', 'Munch Munch Munch', 'The Fog is Coming', 'I am Literally scratching your furniture' }, Stopper = 0  }, },
-	update = function(self, card, dt)
-	    if card.ability.extra.timer >= 0 then
-		    card.ability.extra.timer = card.ability.extra.timer - (dt/4)
-	    end
-	    if card.ability.extra.timer < 0 and card.ability.extra.Stopper <= 0 then
-			card.ability.extra.timer = -69420
-			G.E_MANAGER:add_event(Event({
-                trigger = 'after',
-				delay = 5,
-				func = function()                           
-					play_sound('timpani')
-                    SMODS.destroy_cards(card)
-					return true
-                end,
-			    blocking = false
-            }))
-			card.ability.extra.Stopper = 1
-        end
-    end,
+	config = { extra = { odds = 15, Xmult = 1, currentquip = 0, Xquips = { 'Meow!', 'Munch Munch Munch', 'The Fog is Coming', 'I am Literally scratching your furniture' }, TotalXMult = 1, XmultScaler = 0.15 }, },
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.Xmult, card.ability.extra.Xquips, card.ability.extra.timer, } }
+		return { vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.Xmult, card.ability.extra.XmultScaler, card.ability.extra.TotalXMult } }
 	end,
 	rarity = 2,
 	atlas = 'Modtest',
@@ -320,22 +304,26 @@ SMODS.Joker {
 	eternal_compat = false,
 	calculate = function(self, card, context)
 	if context.MouseClick and card.states.hover.is == true then
-        card.ability.extra.timer = 10
+        if pseudorandom('LiamCat') > G.GAME.probabilities.normal / card.ability.extra.odds then
+			card.ability.extra.TotalXMult = (card.ability.extra.TotalXMult + card.ability.extra.XmultScaler)
+			return {
+				message = ('X' .. card.ability.extra.TotalXMult),
+				colour = G.C.MULT
+			}
+		end
+		if pseudorandom('LiamCat') < G.GAME.probabilities.normal / card.ability.extra.odds then
+			SMODS.destroy_cards(card)
+		end
 	end
 	if context.joker_main then
-			card.ability.extra.currentquip = card.ability.extra.currentquip + 1
-            if card.ability.extra.currentquip > 4 then
-                card.ability.extra.currentquip = 1
-				G.E_MANAGER:add_event(Event({
-					func = function()
-						message = 'Mrrow'
-				    end
-				}))
-            end
-			return {
-				Xmult_mod = card.ability.extra.Xmult,
-				message = card.ability.extra.Xquips[card.ability.extra.currentquip]
-			}
+		card.ability.extra.currentquip = card.ability.extra.currentquip + 1
+        if card.ability.extra.currentquip > 4 then
+           card.ability.extra.currentquip = 1
+        end
+		return {
+	       	Xmult_mod = card.ability.extra.TotalXMult,
+			message = card.ability.extra.Xquips[card.ability.extra.currentquip]
+		}
 		end
 	end
 }
@@ -400,7 +388,7 @@ SMODS.Joker {
 		name = 'Green Square',
 		text = {
 			"{X:purple,C:white} ^#1# {} Mult, Increases by {X:purple,C:white} ^#2# {}",
-			" For each {C:green}Green Joker{} owned",
+			" For each {C:Krypton_green}Green Joker{} owned",
 			"{C:inactive}(Currently {X:purple,C:white}^#3#{C:inactive} Mult)"
 		}
 	},
@@ -902,7 +890,7 @@ SMODS.Joker {
 	  name = "Green Joker's Soul",
 	  text = {
 		  "Sell this joker after {C:attention}#2#{} rounds to apply",
-		  "{C:green}Green Edition{} to a random joker",
+		  "{C:Krypton_green}Green Edition{} to a random joker",
 		  "{C:inactive}(Currently {}{C:attention}#1#{}{C:inactive}/#2#){}",
       }
   },
@@ -929,7 +917,7 @@ SMODS.Joker {
                 colour = G.C.FILTER
             }
         end
-		if context.selling_self and card.ability.extra.rounds >= card.ability.extra.roundtotal then
+		if context.selling_self and card.ability.extra.rounds >= card.ability.extra.roundtotal and not context.blueprint  then
 			local GreenList = {}
 			for k, v in pairs(G.jokers.cards) do
 				if v.ability.set == "Joker" and not v.edition and v ~= card then
@@ -1099,7 +1087,7 @@ SMODS.Joker {
 	loc_txt = {
 		name = "Dihui star's blade",
 		text = {
-			"{C:attention}Retrigger {}all {C:blue}Bladetrail Cards {}{C:attention}#1#{} time(s).",
+			"{C:attention}Retrigger {}all {C:Krypton_bladetrail}Bladetrail Cards {}{C:attention}#1#{} time(s).",
 			"{C:inactive,s:0.7}Lacerating Afterimages from Myriad Moments{}",
 		}
 	},
@@ -1129,7 +1117,7 @@ SMODS.Joker {
 	loc_txt = {
 		name = "Dihui star's Sheath",
 		text = {
-			"All {C:blue}Bladetrail{} Cards Score {C:attention}Bonus{}",
+			"All {C:Krypton_bladetrail}Bladetrail{} Cards Score {C:attention}Bonus{}",
 			"{X:chips,C:white}XChips{} Equal to their {X:mult,C:white}XMult{}",
 			"{C:inactive,s:0.7}'. . .  I'm weary of this stigma of a blade.'{}",
 		}
@@ -1146,18 +1134,14 @@ SMODS.Joker {
 	cost = 6,
 }
 
-to_big = to_big or function(x) return x end
---[[ MAKE HIM WORK DUMBASS
 SMODS.Joker {
 	key = 'Israel',
 	loc_txt = {
 		name = "Israel",
 		text = {
 			"Stores {C:attention}ALL{} {C:money}Money{} Gained.",
-			"Gain {C:attention}Stored{} Money {X:money,C:white}X#1#{}",
-			"When {C:attention}Selling{} This Joker",
-			"{C:inactive}(Currently {}{C:money}$#2#{}{C:inactive}/{X:money,C:white}$#3#{}{C:inactive}){}",
-			"{C:mult,s:0.75}There can only be one israel per run.{}",
+			"Gain {C:attention}Sell Value{} Equal to",
+			"{X:money,C:white}#1#X{} Stored {C:money}Money{}",
 			"{C:inactive,s:0.65}Your money was promised{}",
 			"{C:inactive,s:0.65}to it 3000 years ago.{}",
 		}
@@ -1165,31 +1149,21 @@ SMODS.Joker {
 
 	config = { extra = { Xmoney = 3, StoredMoney = 0} },
 	loc_vars = function(self, info_queue, card)	
-		return { vars = { card.ability.extra.Xmoney, card.ability.extra.StoredMoney, (card.ability.extra.StoredMoney * card.ability.extra.Xmoney) } }
+		return { vars = { card.ability.extra.Xmoney } }
 	end,
 	rarity = 3,
 	atlas = 'Modtest',
 	pos = { x = 13, y = 1},
 	cost = 10,
 	calculate = function(self, card, context)
-		if to_big(G.GAME.dollars) >= to_big(0) and not A then
-			card.ability.extra.StoredMoney = card.ability.extra.StoredMoney + G.GAME.dollars
+		if to_big(G.GAME.dollars) >= to_big(0) then
+			card.ability.extra_value = card.ability.extra_value + (G.GAME.dollars * card.ability.extra.Xmoney)
+            card:set_cost()
 			G.GAME.dollars = 0
-			if context.selling_self then
-				A = 'wawa'
-				return {
-					dollars = card.ability.extra.StoredMoney * card.ability.extra.Xmoney
-				}
-			end
 		end
     end,
-    in_pool = function(self, args)
-		if A then 
-			return false
-		end
-    end
 }
---]]
+
 SMODS.ObjectType({
     key = "Krypton_AIFuel",
     default = "j_splash", -- this is what it should give when you have all of them and showman
@@ -1248,42 +1222,22 @@ SMODS.Joker {
     end
 }
 
-SMODS.ObjectType({
-    key = "Krypton_Black_HolePool",
-    default = "j_Krypton_Event_Horizon",
-    cards = {
-		["j_Krypton_Event_Horizon"] = true,
-    },
-})
-
---  This joker currently destroys eternal jokers, and itself. additionally, it scales itself. Change that next time
---  Make an awesome side on view of an event horizon and accretion disk for art
--- get the gradient working too, maybe add purple to it for exponential mult? i think its is formatted like {V:key}{}
---[[
-SMODS.Gradient {
-	key = 'stats',
-	colors = {
-		[G.C.MULT] = 0,
-		[G.C.CHIPS] = 1,
-	},
-}
-
 SMODS.Joker {
 	key = 'Event_Horizon',
 	loc_txt = {
 		name = 'Event Horizon',
 		text = {
 			'A {C:attention}Random{} Joker is Destroyed at {C:attention}Round end{},',
-			'and another gains {X:mult,C:white}X#1#{} Stats',
+			'and {C:attention}another{} gains {X:mult,C:white}X#1#{} {C:Krypton_stats}Stats{}',
 			'{C:inactive}(Cannot affect itself){}',
 		}
 	},
-	config = { extra = { increase = 1.1 } },
+	config = { extra = { increase = 1.15 } },
 	rarity = 3,
 	eternal_compat = false,
-	cost = 5,
+	cost = 11,
 	atlas = 'Modtest',
-	pos = { x = 14, y = 1},
+	pos = { x = 0, y = 2},
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.increase } }
 	end,
@@ -1291,7 +1245,7 @@ SMODS.Joker {
 		if context.end_of_round and context.main_eval then
 			local BlackHoleTable = {}			
 			for k, v in pairs(G.jokers.cards) do					
-				if v.ability.set == "Joker" then
+				if G.jokers.cards[k].ability.name ~= card.ability.name then
 					table.insert(BlackHoleTable, v)
 				end	
 			end
@@ -1299,7 +1253,7 @@ SMODS.Joker {
 				local IncreasedJoker =
 					pseudorandom_element(BlackHoleTable, pseudoseed("BlackHoleTable"))
 				if IncreasedJoker ~= card then
-					if not Card.no(IncreasedJoker, "immutable", true) then
+					if not Card.no(IncreasedJoker, "immutable", true) or self.key then
 						KryptonacidPack.manipulate(IncreasedJoker, { value = card.ability.extra.increase })
 						check = true
 					end
@@ -1322,7 +1276,127 @@ SMODS.Joker {
 		end
 	end,
 }
---]]
+
+SMODS.Joker {
+	key = 'JewPiter',
+	loc_txt = {
+		name = 'Jewpiter',
+		text = {
+			'If {C:attention}Poker Hand{} Is a {C:attention}Flush,{}',
+			'Earn {C:money}$#1#{} And increase payout by {C:money}$#2#{}',
+			'{C:attention}Increase{} by {C:money}$#3#{} If {C:attention}Poker hand{} is a',
+			'{C:attention}Straight Flush{} Instead, And Payout {X:money,C:white}#4#X{}',
+			'{C:inactive}(Resets on Non-Flush Containing Hand){}'
+		}
+	},
+	config = { extra = { Dollars = 1, FlushIncrease = 1, StraightFlushIncrease = 2, XDollars = 2 } },
+	rarity = 2,
+	cost = 7,
+	atlas = 'Modtest',
+	pos = { x = 1, y = 2},
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card.ability.extra.Dollars, card.ability.extra.FlushIncrease, card.ability.extra.StraightFlushIncrease, card.ability.extra.XDollars } }
+	end,
+	calculate = function(self, card, context)
+		if context.before and (context.scoring_name == 'Flush') then
+			card.ability.extra.Dollars = card.ability.extra.Dollars + card.ability.extra.FlushIncrease
+			return {
+				message = 'Upgrade!',
+				color = G.C.MONEY,
+			}
+		end
+		if context.joker_main and (context.scoring_name == 'Flush') then
+			return {
+				dollars = card.ability.extra.Dollars,
+			}
+		end
+		if context.before and (context.scoring_name == 'Straight Flush') then
+			card.ability.extra.Dollars = card.ability.extra.Dollars + card.ability.extra.StraightFlushIncrease
+			return {
+				message = 'Upgrade!',
+				color = G.C.MONEY,
+			}
+		end
+		if context.joker_main and (context.scoring_name == 'Straight Flush' or context.scoring_name == 'Flush House') then
+			return {
+				dollars = (card.ability.extra.Dollars * card.ability.extra.XDollars),
+			}
+		end
+		if context.final_scoring_step and not (context.scoring_name == 'Flush' or context.scoring_name == 'Straight Flush' or context.scoring_name == 'Flush Five' or context.scoring_name == 'Flush House') and card.ability.extra.Dollars > 1 then
+		    card.ability.extra.Dollars = 1
+			return {	
+				message = 'Reset',
+				color = G.C.MONEY,
+			}
+		end
+	end,
+}
+
+SMODS.Joker {
+	key = 'Idle_Transfiguration',
+	loc_txt = {
+		name = 'Idle Transfiguration',
+		text = {
+			'After {C:attention}#2#{} Round(s), {C:attention}Sell{} this Joker',
+			'To remove {C:mult}ALL{} {C:attention}stickers{} and',
+			'{C:attention}Shuffle{} {C:mult}ALL{} editions on Jokers',
+			'{C:inactive}(Currently {C:attention}#1#{}{C:inactive}/#2#){}',
+			'{C:purple,s:0.8}"Mui Tenten."{}',
+		}
+	},
+	config = { extra = { Rounds = 0, RoundsTotal = 0 } },
+	rarity = 2,
+	cost = 5,
+	atlas = 'Modtest',
+	pos = { x = 2, y = 2},
+	loc_vars = function(self, info_queue, card)
+		return { vars = { card.ability.extra.Rounds, card.ability.extra.RoundsTotal } }
+	end,
+	calculate = function(self, card, context)
+		if context.selling_self and card.ability.extra.Rounds >= card.ability.extra.RoundsTotal and not context.blueprint  then
+			local modifiers = {}
+			for k, v in pairs(G.jokers.cards) do
+				if v.edition then
+					table.insert(modifiers, {edition = true, key = v.edition.key})
+					v:set_edition(nil, true, true)
+				end
+				for kk, vv in pairs(SMODS.Stickers) do
+					if v.ability[vv.key] then
+						v:remove_sticker(vv.key)
+					end
+				end
+			end
+			pseudoshuffle(modifiers, 'seed')
+			for k, v in pairs(modifiers) do
+				local RandomJonkler = {}
+				for kk, vv in pairs(G.jokers.cards) do
+					if (v.edition and not vv.edition) and G.jokers.cards[kk].ability.name ~= card.ability.name then
+						table.insert(RandomJonkler, vv)
+					end
+				end
+				if next(RandomJonkler)then 
+					local joker = pseudorandom_element(RandomJonkler)
+					if v.edition then 
+						joker:set_edition(v.key)
+					end
+				end
+			end
+		end
+		if context.end_of_round and context.main_eval and card.ability.extra.Rounds < card.ability.extra.RoundsTotal and not context.blueprint then
+			card.ability.extra.Rounds = card.ability.extra.Rounds + 1
+			return {
+				message = (card.ability.extra.Rounds .. '/' .. card.ability.extra.RoundsTotal),
+				colour = G.C.PURPLE,
+			}	
+		end
+		if context.end_of_round and context.main_eval and card.ability.extra.Rounds >= card.ability.extra.RoundsTotal and not context.blueprint then
+			return { 
+				message = 'Active!',
+				colour = G.C.PURPLE,
+			}
+		end
+	end,
+}
 ------------------------------------------------------------------------------------------------------------------
 
 local upd = Game.update

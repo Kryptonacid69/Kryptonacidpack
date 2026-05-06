@@ -14,7 +14,7 @@ SMODS.Consumable {
         name = "Bladetrail",
         text={
         "Select up to {C:attention}#1#{} cards to become ",
-        "{C:blue}Bladetrail [Afterimage]{} Cards.",
+        "{C:Krypton_bladetrail}Bladetrail [Afterimage]{} Cards.",
         },
     },
 	cost = 4,

@@ -639,10 +639,3 @@ end
 function KryptonacidPack.reset_to_none()
 	update_hand_text({delay = 0}, {mult = 0, chips = 0, handname = '', level = ''})
 end
-
-function KryptonacidPack.force_hover_desc_update(obj)
-    if obj.states.hover.is and obj.discovered ~= false and obj.locked ~= false then
-        obj:stop_hover()
-        obj:hover()
-    end
-end
