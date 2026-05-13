@@ -52,6 +52,7 @@ SMODS.ObjectType({
 		["j_Krypton_JokerGPT"] = true,
 		["j_Krypton_Event_Horizon"] = true,
 		["j_Krypton_Jewpiter"] = true,
+		["j_Krypton_Mana_Polarizer"] = true,
     },
 })
 
@@ -61,6 +62,7 @@ SMODS.Atlas {
 	px = 71,
 	py = 95
 }
+
 SMODS.Joker {
 	key = 'UncommonJoker',
 	loc_txt = {
@@ -86,6 +88,7 @@ SMODS.Joker {
 		end
 	end
 }
+
 SMODS.Joker {
 	key = 'GreenestJoker',
 	loc_txt = {
@@ -194,7 +197,7 @@ SMODS.Joker {
   key = 'Obese_Joker',
   rarity = 3,
   pos = { x = 4, y = 1 },
-  config = { extra = { Xmult = 1.05, Scalar = 0.02, odds = 2 } },
+  config = { extra = { Xmult = 1.1, Scalar = 0.04, odds = 5 } },
   loc_txt = {
       name = 'Obese Joker',
 	  text = {
@@ -289,41 +292,53 @@ SMODS.Joker {
 		text = {			
 			"{X:mult,C:white} X#3# {} Mult, Gains {X:mult,C:white}X#4#{} When {C:attention}Clicked on",
 			"{C:green}#1# in #2#{} Chance to {C:mult}Destroy{} Itself",
-			"When {C:attention}Clicked on",
+			"When {C:attention}Clicked on. If {C:mult}XMult{} is Higher",
+			"Than {X:mult,C:white}X#6#{} {C:attention}Upgrade{} at {C:attention}Round end{}",
 			"{C:inactive}(Currently {X:mult,C:white}X#5#{}{C:inactive} Mult){}",
 			"{C:inactive,s:0.6}Superior race{}",
 		}
 	},
-	config = { extra = { odds = 15, Xmult = 1, currentquip = 0, Xquips = { 'Meow!', 'Munch Munch Munch', 'The Fog is Coming', 'I am Literally scratching your furniture' }, TotalXMult = 1, XmultScaler = 0.15 }, },
+	config = { extra = { odds = 15, Xmult = 1, currentquip = 0, Xquips = { 'Meow!', 'Munch Munch Munch', 'The Fog is Coming', 'I am Literally scratching your furniture' }, TotalXMult = 1, XmultScaler = 0.15, UpgradeMult = 6 }, },
 	loc_vars = function(self, info_queue, card)
-		return { vars = { (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.Xmult, card.ability.extra.XmultScaler, card.ability.extra.TotalXMult } }
+		local numerator, denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'Krypton_LiamCat')		
+		return { vars = { numerator, denominator, card.ability.extra.Xmult, card.ability.extra.XmultScaler, card.ability.extra.TotalXMult, card.ability.extra.UpgradeMult } }
 	end,
 	rarity = 2,
 	atlas = 'Modtest',
 	pos = { x = 3, y = 1 },
 	eternal_compat = false,
 	calculate = function(self, card, context)
-	if context.MouseClick and card.states.hover.is == true then
-        if pseudorandom('LiamCat') > G.GAME.probabilities.normal / card.ability.extra.odds then
+		if context.MouseClick and card.states.hover.is == true then
 			card.ability.extra.TotalXMult = (card.ability.extra.TotalXMult + card.ability.extra.XmultScaler)
+			if SMODS.pseudorandom_probability(card, 'Krypton_LiamCat', 1, card.ability.extra.odds) then
+				SMODS.destroy_cards(card)
+			end
 			return {
 				message = ('X' .. card.ability.extra.TotalXMult),
 				colour = G.C.MULT
 			}
 		end
-		if pseudorandom('LiamCat') < G.GAME.probabilities.normal / card.ability.extra.odds then
-			SMODS.destroy_cards(card)
-		end
-	end
-	if context.joker_main then
-		card.ability.extra.currentquip = card.ability.extra.currentquip + 1
-        if card.ability.extra.currentquip > 4 then
-           card.ability.extra.currentquip = 1
-        end
-		return {
-	       	Xmult_mod = card.ability.extra.TotalXMult,
-			message = card.ability.extra.Xquips[card.ability.extra.currentquip]
-		}
+		if card.ability.extra.TotalXMult >= card.ability.extra.UpgradeMult and not context.blueprint and context.end_of_round and context.main_eval then
+			G.E_MANAGER:add_event(Event({
+				trigger = 'after',
+				func = function()                           
+					play_sound('timpani')
+					SMODS.add_card({ set = 'joker', key = 'j_Krypton_UltimaJungle', edition = card.edition })                            
+					card:juice_up(0.3, 0.5)
+					SMODS.destroy_cards(card)
+					return true
+				end	
+			}))	
+		end	
+		if context.joker_main then
+			card.ability.extra.currentquip = card.ability.extra.currentquip + 1
+			if card.ability.extra.currentquip > 4 then
+				card.ability.extra.currentquip = 1
+			end
+			return {
+				Xmult_mod = card.ability.extra.TotalXMult,
+				message = card.ability.extra.Xquips[card.ability.extra.currentquip]
+			}
 		end
 	end
 }
@@ -567,7 +582,8 @@ SMODS.Joker {
   cost = 5,
   eternal_compat = false,
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.mult, (G.GAME.probabilities.normal or 1), card.ability.extra.odds } }
+		local numerator, denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'Krypton_MichaelCatV1')	
+		return { vars = { card.ability.extra.mult, numerator, denominator } }
 	end,
 	calculate = function(self, card, context)
 		kittycount = 0
@@ -580,7 +596,7 @@ SMODS.Joker {
 			card.ability.extra.odds = card.ability.extra.oddsscale * (card.ability.extra.oddsscale ^ (kittycount - 1))
 		end
 		if context.final_scoring_step and not context.blueprint then
-		    if pseudorandom('MichaelCatV1') < G.GAME.probabilities.normal / card.ability.extra.odds then
+		    if SMODS.pseudorandom_probability(card, 'Krypton_MichaelCatV1', 1, card.ability.extra.odds) then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
 					delay = 0.4,
@@ -605,7 +621,7 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'MichaelCatV2',
-  config = { extra = { Xmult = 1.5, odds = 10, repetitions = 1 } },
+  config = { extra = { Xmult = 1.5, odds = 15, repetitions = 1 } },
   loc_txt = {
 	  name = 'Shelby - Drinking',
 	  text = {
@@ -623,7 +639,8 @@ SMODS.Joker {
       return false
     end,
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.Xmult, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.repetitions } }
+		local numerator, denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'Krypton_MichaelCatV2')		
+		return { vars = { card.ability.extra.Xmult, numerator, denominator, card.ability.extra.repetitions } }
 	end,
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.repetition then
@@ -636,7 +653,7 @@ SMODS.Joker {
 			end
 		end
 		if context.final_scoring_step and not context.blueprint then
-		    if pseudorandom('MichaelCatV2') < G.GAME.probabilities.normal / card.ability.extra.odds then
+		    if SMODS.pseudorandom_probability(card, 'Krypton_MichaelCatV2', 1, card.ability.extra.odds) then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
 					delay = 0.4,
@@ -661,7 +678,7 @@ SMODS.Joker {
 
 SMODS.Joker {
   key = 'MichaelCatV3',
-  config = { extra = { Xmult = 2.5, odds = 25, repetitions = 1 } },
+  config = { extra = { Xmult = 2.5, odds = 30, repetitions = 1 } },
   loc_txt = {
 	  name = 'Shelby - Punching',
 	  text = {
@@ -679,7 +696,8 @@ SMODS.Joker {
     return false
   end,
 	loc_vars = function(self, info_queue, card)
-		return { vars = { card.ability.extra.Xmult, (G.GAME.probabilities.normal or 1), card.ability.extra.odds, card.ability.extra.repetitions } }
+		local numerator, denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'Krypton_MichaelCatV3')
+		return { vars = { card.ability.extra.Xmult, numerator, denominator, card.ability.extra.repetitions } }
 	end,
 	calculate = function(self, card, context)
 		if context.cardarea == G.play and context.repetition then
@@ -690,7 +708,7 @@ SMODS.Joker {
 			}
 		end
 		if context.final_scoring_step and not context.blueprint then
-		    if pseudorandom('MichaelCatV3') < G.GAME.probabilities.normal / card.ability.extra.odds then
+		    if SMODS.pseudorandom_probability(card, 'Krypton_MichaelCatV3', 1, card.ability.extra.odds) then
 				G.E_MANAGER:add_event(Event({
 					trigger = 'after',
 					delay = 0.4,
@@ -856,7 +874,7 @@ SMODS.Joker{
   eternal_compat = true,
   perishable_compat = false,
   pos = { x = 5, y = 0 },
-  config = { extra = { MultMod = 10, mult = 0 } },
+  config = { extra = { MultMod = 16, mult = 0 } },
 	
 	loc_vars = function(self,info_queue,card)
 		return {vars = {card.ability.extra.mult, card.ability.extra.MultMod}}
@@ -894,11 +912,11 @@ SMODS.Joker {
 		  "{C:inactive}(Currently {}{C:attention}#1#{}{C:inactive}/#2#){}",
       }
   },
-  rarity = 2,
+  rarity = 3,
   pos = { x = 12, y = 0 },
   atlas = 'Modtest',
-  cost = 6,
-   
+  cost = 8,
+  eternal_compat = false, 
 	loc_vars = function(self, info_queue, card)
 		info_queue[#info_queue+1] = G.P_CENTERS.e_Krypton_Green
 		return { vars = { card.ability.extra.rounds, card.ability.extra.roundtotal} }
@@ -1009,7 +1027,7 @@ SMODS.Joker {
 	pos = { x = 9, y = 0 },
 	cost = 20,
 	calculate = function(self, card, context)
-		CatCount = 0
+		local CatCount = 0
 		for i = 1, #G.jokers.cards do
 			if G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Krypton_Cat then
 				CatCount = CatCount + 1
@@ -1109,7 +1127,15 @@ SMODS.Joker {
                 card = card
             }
 		end
-	end
+	end,
+    in_pool = function(self, args) 
+        for _, playing_card in ipairs(G.playing_cards or {}) do
+            if SMODS.has_enhancement(playing_card, 'm_Krypton_BladeTrailCard') then
+                return true
+            end
+        end
+        return false
+    end
 }
 
 SMODS.Joker {
@@ -1132,6 +1158,14 @@ SMODS.Joker {
 	atlas = 'Modtest',
 	pos = { x = 8, y = 0},
 	cost = 6,
+    in_pool = function(self, args) 
+        for _, playing_card in ipairs(G.playing_cards or {}) do
+            if SMODS.has_enhancement(playing_card, 'm_Krypton_BladeTrailCard') then
+                return true
+            end
+        end
+        return false
+    end
 }
 
 SMODS.Joker {
@@ -1146,7 +1180,7 @@ SMODS.Joker {
 			"{C:inactive,s:0.65}to it 3000 years ago.{}",
 		}
 	},
-
+	eternal_compat = false,
 	config = { extra = { Xmoney = 3, StoredMoney = 0} },
 	loc_vars = function(self, info_queue, card)	
 		return { vars = { card.ability.extra.Xmoney } }
@@ -1228,11 +1262,11 @@ SMODS.Joker {
 		name = 'Event Horizon',
 		text = {
 			'A {C:attention}Random{} Joker is Destroyed at {C:attention}Round end{},',
-			'and {C:attention}another{} gains {X:mult,C:white}X#1#{} {C:Krypton_stats}Stats{}',
+			'and {C:attention}another{} gains {X:Krypton_stats,C:white}X#1#{} {C:attention}Stats{}',
 			'{C:inactive}(Cannot affect itself){}',
 		}
 	},
-	config = { extra = { increase = 1.15 } },
+	config = { extra = { increase = 1.2 } },
 	rarity = 3,
 	eternal_compat = false,
 	cost = 11,
@@ -1286,7 +1320,7 @@ SMODS.Joker {
 			'Earn {C:money}$#1#{} And increase payout by {C:money}$#2#{}',
 			'{C:attention}Increase{} by {C:money}$#3#{} If {C:attention}Poker hand{} is a',
 			'{C:attention}Straight Flush{} Instead, And Payout {X:money,C:white}#4#X{}',
-			'{C:inactive}(Resets on Non-Flush Containing Hand){}'
+			'{C:inactive,s:0.9}(Resets on Non-Flush Containing Hand){}'
 		}
 	},
 	config = { extra = { Dollars = 1, FlushIncrease = 1, StraightFlushIncrease = 2, XDollars = 2 } },
@@ -1317,7 +1351,7 @@ SMODS.Joker {
 				color = G.C.MONEY,
 			}
 		end
-		if context.joker_main and (context.scoring_name == 'Straight Flush' or context.scoring_name == 'Flush House') then
+		if context.joker_main and (context.scoring_name == 'Straight Flush') then
 			return {
 				dollars = (card.ability.extra.Dollars * card.ability.extra.XDollars),
 			}
@@ -1344,11 +1378,12 @@ SMODS.Joker {
 			'{C:purple,s:0.8}"Mui Tenten."{}',
 		}
 	},
-	config = { extra = { Rounds = 0, RoundsTotal = 0 } },
+	config = { extra = { Rounds = 0, RoundsTotal = 1 } },
 	rarity = 2,
 	cost = 5,
 	atlas = 'Modtest',
 	pos = { x = 2, y = 2},
+	eternal_compat = false,
 	loc_vars = function(self, info_queue, card)
 		return { vars = { card.ability.extra.Rounds, card.ability.extra.RoundsTotal } }
 	end,
@@ -1397,6 +1432,163 @@ SMODS.Joker {
 		end
 	end,
 }
+
+SMODS.Joker {
+	key = 'Mana_Polarizer',
+	loc_txt = {
+		name = 'Mana Polarizer',
+		text = {
+			"{C:attention}Stone Cards{} Score",
+			"Additional {C:mult}+Mult{} {C:attention}Equal{}",
+			"To Their {C:chips}Chip Value{}",
+		}
+	},
+	config = { extra = { enhancement = "m_stone" } },
+	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = G.P_CENTERS.m_stone		
+	end,
+	rarity = 2,
+	atlas = 'Modtest',
+	pos = { x = 3, y = 2 },
+	cost = 4,
+	calculate = function(self, card, context)
+		if context.individual and context.cardarea == G.play then
+			for k, v in pairs(context.scoring_hand) do  -- HOW TF DID THIS WORK FIRST TRY????? AM I CODING GOD I SWEAR THIS SHOULDNTVE WORKED AS WELL AS IT DID
+				Bonus = context.scoring_hand[k]:get_chip_bonus()
+			end	
+			if SMODS.has_enhancement(context.other_card, card.ability.extra.enhancement) then
+				return {
+					mult_mod = Bonus,
+					message = localize { type = 'variable',  key = 'a_mult', vars = { Bonus } }
+				}
+			end
+		end
+	end,
+    in_pool = function(self, args) 
+        for _, playing_card in ipairs(G.playing_cards or {}) do
+            if SMODS.has_enhancement(playing_card, 'm_stone') then
+                return true
+            end
+        end
+        return false
+    end
+}
+
+SMODS.Joker {
+	key = 'Cobalt60Rod',
+	loc_txt = {
+		name = 'Cobalt-60 Rod',
+		text = {
+			"Retrigger{C:attention} ALL{} Stone Cards {C:attention}#1#{} Time.",
+			"For each {C:attention}Consecutive{} Hand That Contains a",
+			"{C:inactive}Stone{} Card, Increase {C:purple}Power{} {C:chips}Chips{} by {X:purple,C:white}^#3#{}",
+			"{C:inactive}(Currently{} {X:purple,C:white}^#2#{}{C:inactive} Mult){}",
+			"{C:inactive,s:0.7}Why can't i get a good ghoto of{}{C:inactive,s:0.78,E:1} IT{}",
+		}
+	},
+	config = { extra = { repetitions = 1, echips = 1, echipsscalar = 0.01, enhancement = "m_stone", original = 1 } },
+	loc_vars = function(self, info_queue, card)
+		info_queue[#info_queue + 1] = G.P_CENTERS.m_stone	
+		return { vars = { card.ability.extra.repetitions , card.ability.extra.echips , card.ability.extra.echipsscalar } }
+	end,
+	rarity = 3,
+	atlas = 'Modtest',
+	pos = { x = 5, y = 2 },
+	cost = 10,
+	pixel_size = { w = 24, h = 90 },
+	calculate = function(self, card, context)			
+		if context.before and not context.blueprint then
+			local stone_found = false
+			for i = 1, #context.scoring_hand do
+				if SMODS.has_enhancement(context.scoring_hand[i], card.ability.extra.enhancement) then
+					stone_found = true
+				end
+			end
+			if stone_found == true then
+				card.ability.extra.echips = card.ability.extra.echips + card.ability.extra.echipsscalar
+				return {
+					message = 'Upgrade',
+					colour = G.C.PURPLE,
+				}
+			else
+				card.ability.extra.echips = card.ability.extra.original
+				return {	
+					message = 'Reset',
+					colour = G.C.PURPLE,				
+				}
+			end		
+		end
+		if context.cardarea == G.play and context.repetition then
+			return {
+				message = localize("k_again_ex"),
+				repetitions = card.ability.extra.repetitions,
+			}
+		end	
+		if context.joker_main then	
+			return {
+				echips = card.ability.extra.echips,
+				remove_default_message = true,
+				message = ('^' .. card.ability.extra.echips),
+				colour = G.C.PURPLE,
+				sound = 'Krypton_emult',
+			}   
+		end	
+	end,
+	in_pool = function(self, args) 
+        for _, playing_card in ipairs(G.playing_cards or {}) do
+            if SMODS.has_enhancement(playing_card, 'm_stone') then
+                return true
+            end
+        end
+        return false
+    end
+}
+
+SMODS.Joker {
+	key = 'UltimaJungle',
+	loc_txt = {
+		name = 'El Jungle Supremo',
+		text = {
+			"{X:purple,C:white}^#1#{} Mult, Gain {X:purple,C:white}^#2#{} Mult When Clicked.",
+			"{C:green}#3# in #4#{} To {C:mult}Destroy{} Itself When {C:attention}Clicked{}",
+			"{C:inactive,s:0.75}Have you ever pet your cat, With your life on the line?{}"
+		}
+	},
+	config = { extra = { TotalEMult = 1.25 , EmultScaler = 0.25, odds = 2 } },
+	loc_vars = function(self, info_queue, card)
+		local numerator, denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'Krypton_UltimaJungle')		
+		return { vars = { card.ability.extra.TotalEMult, card.ability.extra.EmultScaler, numerator, denominator } }
+	end,
+	rarity = 4,
+	atlas = 'Modtest',
+	pos = { x = 4, y = 2 },
+	cost = 20,
+    in_pool = function(self, args)
+		return false
+    end,  
+	calculate = function(self, card, context)
+		if context.MouseClick and card.states.hover.is == true then
+			card.ability.extra.TotalEMult = card.ability.extra.TotalEMult + card.ability.extra.EmultScaler
+			if SMODS.pseudorandom_probability(card, 'Krypton_UltimaJungle', 1, card.ability.extra.odds) then
+				SMODS.destroy_cards(card)
+			end
+			return {
+				message = ('^' .. card.ability.extra.TotalEMult),
+				colour = G.C.PURPLE,				
+			}
+		end	
+		if context.joker_main then
+			return {
+				emult = card.ability.extra.TotalEMult,
+				remove_default_message = true,
+				message = 'Mrrow!',
+				colour = G.C.PURPLE,
+				sound = 'Krypton_emult',
+			}
+		end
+	end
+}
+
 ------------------------------------------------------------------------------------------------------------------
 
 local upd = Game.update
