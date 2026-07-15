@@ -3,11 +3,6 @@ SMODS.Shader {
   path = 'Green.fs' 
 }
 
-SMODS.Sound {
-  key = 'GreenSound',
-  path = 'GreenEditionPlop.ogg'
-}
-
 SMODS.Edition {
 	key = "Green",
     loc_txt = {

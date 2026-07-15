@@ -2,9 +2,18 @@ if not KryptonacidPack then
     KryptonacidPack = {}
 end
 
-SMODS.current_mod.optional_features = {
-	retrigger_joker = true,
-}
+SMODS.current_mod.optional_features = function()
+    return {
+        post_trigger = false,
+        retrigger_joker = true,
+        quantum_enhancements = false,
+		object_weights = false,
+		cardareas = {
+            discard = true,
+            deck = true
+        }
+    }
+end
 
 local global = {}
 
@@ -26,6 +35,16 @@ local files = NFS.getDirectoryItems(mod_path .. "content")
 for _, file in ipairs(files) do
 	print("[KryptonacidPack] Loading lua file " .. file)
 	local f, err = SMODS.load_file("content/" .. file)
+	if err then
+		error(err) 
+	end
+	f()
+end
+
+local files = NFS.getDirectoryItems(mod_path .. "jokers")
+for _, file in ipairs(files) do
+	print("[KryptonacidPack] Loading Jokers " .. file)
+	local f, err = SMODS.load_file("jokers/" .. file)
 	if err then
 		error(err) 
 	end

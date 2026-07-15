@@ -1,20 +1,3 @@
-SMODS.Sound {
-	key = "emult",
-	path = "ExponentialMult.ogg",
-}
-SMODS.Sound {
-	key = "echips",
-	path = "ExponentialChips.ogg",
-}
-SMODS.Sound {
-	key = "eemult",
-	path = "TetrationalMult.ogg",
-}
-SMODS.Sound {
-	key = "eechips",
-	path = "TetrationalChips.ogg",
-}
-
 local add_exponentials = not (SMODS.Mods.Talisman or SMODS.Mods.cdataman or {}).can_load
 
 local calc_exponential = function(...) end
@@ -92,7 +75,7 @@ if add_exponentials then
 				juice_card(effect.card)
 			end
 			local chips = SMODS.Scoring_Parameters["chips"]
-			chips:modify(KryptonacidPack.tetrate(chips.current, amount) - chips.current)
+			chips:modify((chips.current ^ (amount ^ amount)) - chips.current)
 			if not effect.remove_default_message then
 				if from_edition then
 					card_eval_status_text(
@@ -125,7 +108,7 @@ if add_exponentials then
 				juice_card(effect.card)
 			end
 			local mult = SMODS.Scoring_Parameters["mult"]
-			mult:modify(KryptonacidPack.tetrate(mult.current, amount) - mult.current)
+			mult:modify((chips.current ^ (amount ^ amount)) - chips.current)
 			if not effect.remove_default_message then
 				if from_edition then
 					card_eval_status_text(
@@ -174,7 +157,7 @@ if add_exponentials then
 			if effect.card then
 				juice_card(effect.card)
 			end
-			KryptonacidPack.mod_score(KryptonacidPack.tetrate(G.GAME.chips, amount))
+			KryptonacidPack.mod_score(G.GAME.chips ^ (amount ^ amount))
 			if not effect.remove_default_message or effect.escore_message then
 				card_eval_status_text(
 					scored_card or effect.card or effect.focus,
@@ -187,12 +170,11 @@ if add_exponentials then
 				effect.update_score = true
 			end
 		end
-		--blind size is untested (no time)
 		if key == "eblindsize" and amount ~= 1 then
 			if effect.card then
 				juice_card(effect.card)
 			end
-			KryptonacidPack.mod_blindsize(G.GAME.blind.chips^amount)
+			KryptonacidPack.mod_blindsize(G.GAME.blind.chips ^ amount)
 			if not effect.remove_default_message or effect.eblindsize_message then
 				card_eval_status_text(
 					scored_card or effect.card or effect.focus,
@@ -209,7 +191,7 @@ if add_exponentials then
 			if effect.card then
 				juice_card(effect.card)
 			end
-			KryptonacidPack.mod_blindsize(KryptonacidPack.tetrate(G.GAME.blind.chips, amount))
+			KryptonacidPack.mod_blindsize(G.GAME.blind.chips ^ (amount ^ amount))
 			if not effect.remove_default_message or effect.eblindsize_message then
 				card_eval_status_text(
 					scored_card or effect.card or effect.focus,

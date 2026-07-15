@@ -1,11 +1,3 @@
-SMODS.Atlas {
-	key = "Decks",
-	path = "DecksSpritesheet.png",
-	px = 71,
-	py = 95
-}
-
-
 SMODS.Back {
     key = "sisyphus",
     pos = { x = 0, y = 0 },

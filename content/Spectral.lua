@@ -1,10 +1,3 @@
-SMODS.Atlas {
-    key = 'Spectral',
-    path = 'SpectralSpritesheet.png',
-    px = 71,
-    py = 95,
-}
-
 SMODS.Consumable {
     key = '[Bladetrail]',
     set = 'Spectral',
@@ -74,15 +67,6 @@ SMODS.Consumable {
         return true
     end
 }
-
-SMODS.ObjectType({
-    key = "Krypton_PowerMultCat",
-    default = "j_joker", -- this is what it should give when you have all of them and showman
-    cards = {
-		["j_Krypton_MichaelCatV4"] = true,
-		["j_Krypton_MyCutiePatootie"] = true,
-    },
-})
 
 SMODS.Consumable {
     key = 'UpDownBoy',

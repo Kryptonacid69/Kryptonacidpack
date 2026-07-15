@@ -1,10 +1,4 @@
---[[SMODS.Atlas {
-	key = 'StickerAtlas',
-	path = 'StickerSpritesheet.png',
-	px = 71,
-	py = 95,
-}
-
+--[[
 SMODS.Sticker {
     key = 'GreenSticker',
 	pos = { x = 0, y = 0 },	

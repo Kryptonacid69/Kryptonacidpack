@@ -1,10 +1,3 @@
-SMODS.Atlas {
-	key = 'TarotAtlas',
-	path = 'TarotSpritesheet.png',
-	px = 71,
-	py = 95
-}
-
 SMODS.Consumable {
     key = "Krypton_Random",
     set = "Tarot",
@@ -12,8 +5,8 @@ SMODS.Consumable {
     loc_txt = {
         name = "Kryptonic Acid",
         text={
-        "Creates a random",
-        "{C:attention}KryptonacidPack Joker{}",
+        "Creates a random Non-",
+        "{C:legendary,E:1}Legendary{} {C:attention}KryptonacidPack Joker{}",
         "{C:inactive}(Must have room.){}",
 		"{C:inactive,s:0.66}Shameless Self-Insert{}",
         },
@@ -67,8 +60,10 @@ SMODS.Consumable {
 		end		
     end,
     can_use = function(self, card)
-		if #G.hand.highlighted <= card.ability.max_highlighted then
-			return true
+		if G.hand.highlighted[1] then
+			if #G.hand.highlighted <= card.ability.max_highlighted and SMODS.has_enhancement(G.hand.highlighted[1], card.ability.enhancement) then
+				return true
+			end
 		end
     end,
 	in_pool = function(self, args) 
