@@ -56,10 +56,19 @@ function CardArea:add_to_highlighted(card, silent, ...)
     return StayTheStill(self, card, silent, ...)
 end
 --]]
+
 local lcpref = Controller.L_cursor_press
 function Controller:L_cursor_press(x, y)
     lcpref(self, x, y)
     if G and G.jokers and G.jokers.cards and not G.SETTINGS.paused then
         SMODS.calculate_context({ MouseClick = true })
+    end
+end
+
+--- @param obj Moveable|table
+function KryptonacidPack.force_hover_desc_update(obj)
+    if obj.states.hover.is and obj.discovered ~= false and obj.locked ~= false then
+        obj:stop_hover()
+        obj:hover()
     end
 end

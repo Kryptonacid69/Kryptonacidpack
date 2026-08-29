@@ -29,3 +29,8 @@ SMODS.Sound {
   key = 'GreenSound',
   path = 'GreenEditionPlop.ogg'
 }
+
+SMODS.Sound {
+  key = 'VoidImplode',
+  path = 'VoidImplosion.ogg'
+}

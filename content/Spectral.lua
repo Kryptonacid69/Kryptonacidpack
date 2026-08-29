@@ -83,10 +83,10 @@ SMODS.Consumable {
 	cost = 4,
     atlas = 'Spectral',
 	pos = { x = 2, y = 0 },
-    config = { StatIncrease = 1.5, EmultStatIncrease = 1.1 },
+    config = { StatIncrease = 1.5 },
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue + 1] = {key = 'Krypton_CatGroupText', set = 'Other'}
-        return { vars = { card.ability.StatIncrease, card.ability.EmultStatIncrease } }
+        return { vars = { card.ability.StatIncrease } }
     end,
 	use = function(self, card, area, copier)
 		CatTable = {}

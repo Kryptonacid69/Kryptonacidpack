@@ -1,4 +1,4 @@
-SMODS.Tag {
+--[[SMODS.Tag {
     key = "Debug",
     pos = { x = 0, y = 0 },
     apply = function(self, tag, context)
@@ -18,4 +18,4 @@ SMODS.Tag {
             return card
         end
     end
-}
+}--]]

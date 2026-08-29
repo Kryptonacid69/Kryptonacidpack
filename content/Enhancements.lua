@@ -84,7 +84,7 @@ SMODS.Enhancement {
 		end
 	end,
 }
-
+--[[ depreciated, never to be implemented before mortis.
 SMODS.Enhancement {
     key = 'Withered',
 	pos = { x = 0, y = 1 },
@@ -126,7 +126,7 @@ SMODS.Enhancement {
 		end
 	end
 }
---[[
+
 SMODS.Enhancement {
     key = 'Blooming',
 	pos = { x = 1, y = 0 },
