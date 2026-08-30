@@ -45,12 +45,13 @@ SMODS.Joker {
                     end
                 }))			
 			end
-			if context.joker_main then
-				return {
-					xmult = card.ability.extra.Xmult
-				}
-			end	
 		end
+		if context.joker_main then
+			return {
+				Xmult_mod = card.ability.extra.Xmult,
+				message = localize { type = 'variable', key = 'a_xmult', vars = { card.ability.extra.Xmult } }
+			}
+		end	
 	end,
 }
 

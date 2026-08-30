@@ -21,13 +21,13 @@ SMODS.Joker {
 	end,
 	
 	update = function(self, card, dt)
-		if card.ability.extra.timer > 0 then
+		if card.ability.extra.timer > 0 and G.GAME.blind.in_blind then
 			card.ability.extra.timer = card.ability.extra.timer - dt/4
 		end
     end,
 	calculate = function(self, card, context)
-		if context.setting_blind then
-			card.ability.extra.timer = 25
+		if context.setting_blind and not context.blind.boss then
+			card.ability.extra.timer = card.ability.extra.length
 		end
 		if card.ability.extra.timer < 0 then
 			card.ability.extra.timer = 0
